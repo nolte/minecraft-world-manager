@@ -7,8 +7,6 @@
 # and accepts an argument to specify the text encoding
 # Python 3 only projects can skip this import
 from io import open
-# io.open is needed for projects that support Python 2.7
-# It ensures open() defaults to text mode with universal newlines,
 from os import path
 
 # Always prefer setuptools over distutils
@@ -21,11 +19,18 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 
-requirements = ["Click==7.0", "pyyaml>=4.2b1", "python-gitlab==1.7.0", "gitpython==2.1.11"]
+requirements = [
+    "Click==7.0",
+    "NBT==1.5.0",
+    "progressbar2==3.39.3",
+    "pyyaml>=4.2b1",
+    "terminaltables==3.1.0",
+    "console-menu==0.5.1",
+]
 
 setup_requirements = []
 
-test_requirements = []
+test_requirements = ["pytest==4.1.0"]
 
 setup(
     author="nolte",
@@ -40,24 +45,18 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     description="Command line utility for handle multiply git projects",
-    entry_points={"console_scripts": ["gitlab_bulkcheckout=gitlab_bulkcheckout.cli:main"]},
+    entry_points={"console_scripts": ["mcworldmanager=mcworldmanager.cli:main"]},
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    # include_package_data=True,
-    # exclude_package_data={"": ["Dockerfile"], "": ["docs"], "": [".travis.yml"]},
-    keywords="gitlab_bulkcheckout",
-    name="gitlab_bulkcheckout",
-    # package_dir={"": "gitlab_bulkcheckout"},
-    packages=find_packages(
-        include=["gitlab_bulkcheckout"],
-        # exclude=["*.circleci", "*Dockerfile", "*.travisci", "*.tests", "*.tests.*", "tests.*", "tests"],
-    ),
+    keywords="minecraft",
+    name="mcworldmanager",
+    packages=find_packages(include=["mcworldmanager", "mcworldmanager.core"]),
     setup_requires=setup_requirements,
     test_suite="tests",
     tests_require=test_requirements,
-    url="https://github.com/nolte/gitlab-bulkcheckout",
-    version="0.23.0.dev",
+    url="https://github.com/nolte/minecraft-world-manager",
+    version="0.0.1.dev",
     zip_safe=False,
 )
