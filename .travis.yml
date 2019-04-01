@@ -1,0 +1,13 @@
+sudo: false
+language: python
+branches:
+  except:
+  - gh-page
+  - "/release\\/v.*-pre/"
+python:
+- '3.5'
+- '3.6'
+install:
+- pip install tox-travis
+script:
+- tox
