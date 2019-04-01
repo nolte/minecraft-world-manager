@@ -217,9 +217,9 @@ jobs:
           at: /tmp/workspaces
       - *run_task_install_tox_dependencies
       - run:
-          name: execute the flake8 static tests
+          name: execute the fix_lint static tests
           command: |
-            tox -e flake8
+            tox -e fix_lint
 
 
       - store_test_results:
