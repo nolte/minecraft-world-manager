@@ -30,7 +30,7 @@ requirements = [
 
 setup_requirements = []
 
-test_requirements = ["pytest==4.1.0"]
+test_requirements = ["pytest==4.4.0"]
 
 setup(
     author="nolte",
@@ -57,6 +57,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/nolte/minecraft-world-manager",
-    version="0.0.1.dev",
+    version="0.1.0.dev",
     zip_safe=False,
 )
