@@ -155,9 +155,11 @@ class MCScannedFile(MCScannedElement):
         self.scan_time = None
         self.filename = ntpath.basename(path)
 
+
 class MCDataFile(MCScannedFile):
     def __init__(self, path):
         super().__init__(path, MC_FILE_TYPE_DATA)
+
 
 class MCRegionFile(MCScannedFile):
     def __init__(self, path):

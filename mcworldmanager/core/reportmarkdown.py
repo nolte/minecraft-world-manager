@@ -122,7 +122,7 @@ class RegionReporter(object):
             report += table.table
             report += "\n\n"
 
-        return report        
+        return report
 
     def getChunksRows(self, chunks):
         chunk_rows = []

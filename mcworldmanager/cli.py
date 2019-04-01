@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Main `gitlab_bulkcheckout` CLI."""
+"""Main `mcworldmanager` CLI."""
 
 import logging
 import sys
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 @click.option("-v", "--verbose", is_flag=True, help="Print debug information", default=False)
 @click.option(u"--debug-file", type=click.Path(), default=None, help=u"File to be used as a stream for DEBUG logging")
 def main(verbose, debug_file):
-    """Console script for gitlab_bulkcheckout."""
+    """Console script for mcworldmanager."""
     configure_logger(stream_level="DEBUG" if verbose else "INFO", debug_file=debug_file)
 
 

@@ -33,7 +33,7 @@ spelling_show_suggestions = True
 spelling_ignore_pypi_package_names = True
 spelling_lang = "en_GB"
 
-# apidoc_module_dir = "../gitlab_bulkcheckout"
+# apidoc_module_dir = "../mcworldmanager"
 
 napoleon_google_docstring = False
 napoleon_use_param = False
