@@ -2,7 +2,7 @@ version: 2
 aliases:
 
   # SSH Deployment key for github Pushing,
-  - &deploy_ssh_fingerprint "4e:17:0c:86:25:75:37:16:c4:a9:e9:3e:91:23:b1:cb"
+  - &deploy_ssh_fingerprint "ca:69:30:3f:10:7b:cb:8d:07:7a:95:fd:6d:45:ee:44"
 
   - &deploy_ssh_sign_fingerprint "5c:5e:79:96:0e:de:3e:cf:cf:ab:1d:96:da:b8:a8:72"
 
