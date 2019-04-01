@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>mcworldmanager.core.reportmarkdown &#8212; Minecraft Region Checker  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for mcworldmanager.core.reportmarkdown</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">terminaltables</span> <span class="k">import</span> <span class="n">AsciiTable</span>
+
+<span class="kn">from</span> <span class="nn">mcworldmanager.core</span> <span class="k">import</span> <span class="n">models</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">WORLD_REGION_TABLE_HEADLINE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Problem&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Corrupted&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Wrong l.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Entities&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Shared o.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Missing tag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Total chunks&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;All Chunks&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Not Created&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="WorldsReporter"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.reportmarkdown.WorldsReporter">[docs]</a><span class="k">class</span> <span class="nc">WorldsReporter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worlds</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worlds</span> <span class="o">=</span> <span class="n">worlds</span>
+
+<div class="viewcode-block" id="WorldsReporter.report"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.reportmarkdown.WorldsReporter.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reportText</span><span class="p">):</span>
+        <span class="n">reportText</span> <span class="o">+=</span> <span class="s2">&quot;# Report</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="n">table_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">WORLD_REGION_TABLE_HEADLINE</span><span class="p">]</span>
+        <span class="n">overview_table_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="s2">&quot;Region Files&quot;</span><span class="p">,</span> <span class="s2">&quot;Data Files&quot;</span><span class="p">,</span> <span class="s2">&quot;Player Files&quot;</span><span class="p">]]</span>
+
+        <span class="n">specialWorldFiles</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">world</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worlds</span><span class="p">:</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">currentWorld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worlds</span><span class="p">[</span><span class="n">world</span><span class="p">]</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">currentWorld</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">currentWorld</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">specialWorldFiles</span><span class="p">[</span><span class="n">currentWorld</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">currentWorld</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">getFilesWithOneOfError</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">SPECIAL_EYES_ERRORS</span><span class="p">)</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">currentWorld</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_REGION</span><span class="p">])))</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">currentWorld</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_DATA</span><span class="p">])))</span>
+            <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_PLAYERS_OLD</span> <span class="ow">in</span> <span class="n">currentWorld</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+                <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">currentWorld</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_PLAYERS_OLD</span><span class="p">])))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">currentWorld</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_PLAYERS</span><span class="p">])))</span>
+
+            <span class="n">row</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">WorldReporter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worlds</span><span class="p">[</span><span class="n">world</span><span class="p">])</span><span class="o">.</span><span class="n">regionValidation</span><span class="p">())</span>
+            <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">overview_table_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="n">AsciiTable</span><span class="p">(</span><span class="n">overview_table_data</span><span class="p">)</span>
+        <span class="n">reportText</span> <span class="o">+=</span> <span class="n">table</span><span class="o">.</span><span class="n">table</span>
+        <span class="n">reportText</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="n">AsciiTable</span><span class="p">(</span><span class="n">table_data</span><span class="p">)</span>
+        <span class="n">reportText</span> <span class="o">+=</span> <span class="n">table</span><span class="o">.</span><span class="n">table</span>
+        <span class="n">reportText</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="n">reportText</span> <span class="o">+=</span> <span class="s2">&quot;# Special Eye Files</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">world</span> <span class="ow">in</span> <span class="n">specialWorldFiles</span><span class="p">:</span>
+            <span class="n">reportText</span> <span class="o">+=</span> <span class="s2">&quot;## World </span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">world</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="n">brokenFiles</span> <span class="o">=</span> <span class="n">specialWorldFiles</span><span class="p">[</span><span class="n">world</span><span class="p">]</span>
+            <span class="n">reportText</span> <span class="o">+=</span> <span class="s2">&quot;Broken Files: </span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">brokenFiles</span><span class="p">)))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">broken</span> <span class="ow">in</span> <span class="n">brokenFiles</span><span class="p">:</span>
+                <span class="n">reportText</span> <span class="o">+=</span> <span class="s2">&quot;Files: </span><span class="si">{:}</span><span class="s2"> fails </span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">broken</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">broken</span><span class="o">.</span><span class="n">getScan_Results</span><span class="p">()))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">reportText</span></div></div>
+
+
+<div class="viewcode-block" id="WorldReporter"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.reportmarkdown.WorldReporter">[docs]</a><span class="k">class</span> <span class="nc">WorldReporter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">world</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="n">world</span>
+
+<div class="viewcode-block" id="WorldReporter.report"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.reportmarkdown.WorldReporter.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">):</span>
+        <span class="n">report</span> <span class="o">+=</span> <span class="s2">&quot;World </span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span></div>
+
+<div class="viewcode-block" id="WorldReporter.regionValidation"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.reportmarkdown.WorldReporter.regionValidation">[docs]</a>    <span class="k">def</span> <span class="nf">regionValidation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">worldRegionRow</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_CORRUPTED</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_WRONG_LOCATED</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_TOO_MANY_ENTITIES</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_SHARED_OFFSET</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_MISSING_TAG</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_OK</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">worldRegionRow</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_NOT_CREATED</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">regionName</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_REGION</span><span class="p">]:</span>
+            <span class="n">region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_REGION</span><span class="p">][</span><span class="n">regionName</span><span class="p">]</span>
+            <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_CORRUPTED</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_CORRUPTED</span><span class="p">))</span>
+            <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_WRONG_LOCATED</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_WRONG_LOCATED</span><span class="p">))</span>
+            <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_TOO_MANY_ENTITIES</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_TOO_MANY_ENTITIES</span><span class="p">))</span>
+            <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_SHARED_OFFSET</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_SHARED_OFFSET</span><span class="p">))</span>
+            <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_MISSING_TAG</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_MISSING_TAG</span><span class="p">))</span>
+            <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_OK</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_OK</span><span class="p">))</span>
+            <span class="n">worldRegionRow</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">chunks</span><span class="p">)</span>
+            <span class="n">worldRegionRow</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_NOT_CREATED</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_NOT_CREATED</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">worldRegionRow</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="RegionReporter"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.reportmarkdown.RegionReporter">[docs]</a><span class="k">class</span> <span class="nc">RegionReporter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">region</span>
+
+<div class="viewcode-block" id="RegionReporter.report"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.reportmarkdown.RegionReporter.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">):</span>
+        <span class="n">report</span> <span class="o">+=</span> <span class="s2">&quot;# Region &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:}</span><span class="s2"> (</span><span class="si">{:d}</span><span class="s2">,</span><span class="si">{:d}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="n">table_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">WORLD_REGION_TABLE_HEADLINE</span><span class="p">]</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Counts&quot;</span><span class="p">]</span>
+
+        <span class="n">row</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getRegionRow</span><span class="p">())</span>
+        <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">AsciiTable</span><span class="p">(</span><span class="n">table_data</span><span class="p">)</span>
+        <span class="n">report</span> <span class="o">+=</span> <span class="n">table</span><span class="o">.</span><span class="n">table</span>
+        <span class="n">report</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">## Chunks Report </span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="n">faildGroups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">groupChunksByFail</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">resultGroup</span> <span class="ow">in</span> <span class="n">faildGroups</span><span class="p">:</span>
+            <span class="n">report</span> <span class="o">+=</span> <span class="s2">&quot;### Fails &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resultGroup</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="n">chunk_table_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;Global X&quot;</span><span class="p">,</span> <span class="s2">&quot;Global Y&quot;</span><span class="p">]]</span>
+            <span class="n">chunk_table_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getChunksRows</span><span class="p">(</span><span class="n">faildGroups</span><span class="p">[</span><span class="n">resultGroup</span><span class="p">]))</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="n">AsciiTable</span><span class="p">(</span><span class="n">chunk_table_data</span><span class="p">)</span>
+            <span class="n">report</span> <span class="o">+=</span> <span class="n">table</span><span class="o">.</span><span class="n">table</span>
+            <span class="n">report</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">report</span></div>
+
+<div class="viewcode-block" id="RegionReporter.getChunksRows"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.reportmarkdown.RegionReporter.getChunksRows">[docs]</a>    <span class="k">def</span> <span class="nf">getChunksRows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
+        <span class="n">chunk_rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">:</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">chunk</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">chunk</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">chunk</span><span class="o">.</span><span class="n">get_global_chunk_coords</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">chunk</span><span class="o">.</span><span class="n">get_global_chunk_coords</span><span class="p">()[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">chunk_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">chunk_rows</span></div>
+
+<div class="viewcode-block" id="RegionReporter.getRegionRow"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.reportmarkdown.RegionReporter.getRegionRow">[docs]</a>    <span class="k">def</span> <span class="nf">getRegionRow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">chunksResultColums</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_CORRUPTED</span><span class="p">)),</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_WRONG_LOCATED</span><span class="p">)),</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_TOO_MANY_ENTITIES</span><span class="p">)),</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_SHARED_OFFSET</span><span class="p">)),</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_MISSING_TAG</span><span class="p">)),</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_OK</span><span class="p">)),</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">chunks</span><span class="p">),</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CHUNK_NOT_CREATED</span><span class="p">)),</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">chunksResultColums</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Minecraft Region Checker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/usage.html">Usage</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

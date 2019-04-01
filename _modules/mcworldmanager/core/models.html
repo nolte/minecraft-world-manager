@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>mcworldmanager.core.models &#8212; Minecraft Region Checker  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for mcworldmanager.core.models</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">ntpath</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
+<span class="kn">from</span> <span class="nn">mcworldmanager.core</span> <span class="k">import</span> <span class="n">util</span>
+
+<span class="n">MC_FILE_TYPE_REGION</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">MC_FILE_TYPE_DATA</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">MC_FILE_TYPE_PLAYERS_OLD</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">MC_FILE_TYPE_PLAYERS</span> <span class="o">=</span> <span class="mi">4</span>
+
+
+<span class="n">CHUNK_NOT_CREATED</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">CHUNK_OK</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">CHUNK_CORRUPTED</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">CHUNK_WRONG_LOCATED</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">CHUNK_TOO_MANY_ENTITIES</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">CHUNK_SHARED_OFFSET</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">CHUNK_MISSING_TAG</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">CHUNK_SHARED_OFFSET_CROSS</span> <span class="o">=</span> <span class="mi">6</span>
+
+<span class="n">DATA_MALFORMED_FILE_ERROR</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">DATA_IO_ERROR</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="n">DATA_UNEXPECTED</span> <span class="o">=</span> <span class="mi">12</span>
+
+<span class="n">REGION_TOO_SMALL</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">REGION_UNREADABLE</span> <span class="o">=</span> <span class="mi">21</span>
+
+<span class="n">SPECIAL_EYES_ERRORS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">REGION_TOO_SMALL</span><span class="p">,</span>
+    <span class="n">REGION_UNREADABLE</span><span class="p">,</span>
+    <span class="n">DATA_UNEXPECTED</span><span class="p">,</span>
+    <span class="n">DATA_IO_ERROR</span><span class="p">,</span>
+    <span class="n">DATA_MALFORMED_FILE_ERROR</span><span class="p">,</span>
+    <span class="n">CHUNK_SHARED_OFFSET_CROSS</span><span class="p">,</span>
+    <span class="n">CHUNK_CORRUPTED</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="build_old_player_file"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.build_old_player_file">[docs]</a><span class="k">def</span> <span class="nf">build_old_player_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">MCScannedFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">MC_FILE_TYPE_PLAYERS_OLD</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_player_file"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.build_player_file">[docs]</a><span class="k">def</span> <span class="nf">build_player_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">MCScannedFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">MC_FILE_TYPE_PLAYERS</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_mc_data_file"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.build_mc_data_file">[docs]</a><span class="k">def</span> <span class="nf">build_mc_data_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">MCDataFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_mc_region_file"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.build_mc_region_file">[docs]</a><span class="k">def</span> <span class="nf">build_mc_region_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">MCRegionFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MCValidatesResultObject"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCValidatesResultObject">[docs]</a><span class="k">class</span> <span class="nc">MCValidatesResultObject</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="MCValidatesResultObject.hasError"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCValidatesResultObject.hasError">[docs]</a>    <span class="k">def</span> <span class="nf">hasError</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MCValidatesResultObject.isErrorExists"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCValidatesResultObject.isErrorExists">[docs]</a>    <span class="k">def</span> <span class="nf">isErrorExists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MCValidatesResultObject.isOneOfErrorsExists"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCValidatesResultObject.isOneOfErrorsExists">[docs]</a>    <span class="k">def</span> <span class="nf">isOneOfErrorsExists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errors</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isErrorExists</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="MCWorlds"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCWorlds">[docs]</a><span class="k">class</span> <span class="nc">MCWorlds</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Model Class for all Analyed worlds&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worlds_directories</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">worlds_directories</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">world_directory</span> <span class="ow">in</span> <span class="n">worlds_directories</span><span class="p">:</span>
+            <span class="n">currentWorld</span> <span class="o">=</span> <span class="n">MCWorld</span><span class="p">(</span><span class="n">world_directory</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">currentWorld</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">currentWorld</span>
+
+<div class="viewcode-block" id="MCWorlds.all"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCWorlds.all">[docs]</a>    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">allTasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">world</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">allTasks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">world</span><span class="p">]</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">allTasks</span></div></div>
+
+
+<div class="viewcode-block" id="MCWorld"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCWorld">[docs]</a><span class="k">class</span> <span class="nc">MCWorld</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">world_folder</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">world_folder</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">world_folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">world_folder</span> <span class="o">=</span> <span class="n">world_folder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">PurePath</span><span class="p">(</span><span class="n">world_folder</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MCFilesSet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MCWorld.MCFilesSet"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCWorld.MCFilesSet">[docs]</a>    <span class="k">class</span> <span class="nc">MCFilesSet</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Holder Class for the Analysed MC Files &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">world</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">MC_FILE_TYPE_DATA</span><span class="p">]</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">scan_folder_content</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">world</span><span class="o">.</span><span class="n">world_folder</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">),</span> <span class="n">build_mc_data_file</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">MC_FILE_TYPE_REGION</span><span class="p">]</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">scan_folder_content</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">world</span><span class="o">.</span><span class="n">world_folder</span><span class="p">,</span> <span class="s2">&quot;region&quot;</span><span class="p">),</span> <span class="n">build_mc_region_file</span>
+            <span class="p">)</span>
+            <span class="n">oldPlayerPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">world</span><span class="o">.</span><span class="n">world_folder</span><span class="p">,</span> <span class="s2">&quot;players&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">oldPlayerPath</span><span class="p">):</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">MC_FILE_TYPE_PLAYERS_OLD</span><span class="p">]</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">scan_folder_content</span><span class="p">(</span><span class="n">oldPlayerPath</span><span class="p">,</span> <span class="n">build_old_player_file</span><span class="p">)</span>
+
+            <span class="n">playerPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">world</span><span class="o">.</span><span class="n">world_folder</span><span class="p">,</span> <span class="s2">&quot;playerdata&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">playerPath</span><span class="p">):</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">MC_FILE_TYPE_PLAYERS</span><span class="p">]</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">scan_folder_content</span><span class="p">(</span><span class="n">playerPath</span><span class="p">,</span> <span class="n">build_player_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MCWorld.MCFilesSet.all"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCWorld.MCFilesSet.all">[docs]</a>        <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">all</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">files</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="nb">all</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">files</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">return</span> <span class="nb">all</span></div>
+
+<div class="viewcode-block" id="MCWorld.MCFilesSet.getFilesWithOneOfError"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCWorld.MCFilesSet.getFilesWithOneOfError">[docs]</a>        <span class="k">def</span> <span class="nf">getFilesWithOneOfError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errors</span><span class="p">):</span>
+            <span class="n">faildFiles</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">fileType</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">fileName</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="n">fileType</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="n">fileType</span><span class="p">][</span><span class="n">fileName</span><span class="p">]</span><span class="o">.</span><span class="n">isOneOfErrorsExists</span><span class="p">(</span><span class="n">errors</span><span class="p">):</span>
+                        <span class="n">faildFiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">fileType</span><span class="p">][</span><span class="n">fileName</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">faildFiles</span></div></div></div>
+
+
+<div class="viewcode-block" id="MCScannedElement"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCScannedElement">[docs]</a><span class="k">class</span> <span class="nc">MCScannedElement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_results</span> <span class="o">=</span> <span class="n">MCValidatesResultObject</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MCScannedElement.isOneOfErrorsExists"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCScannedElement.isOneOfErrorsExists">[docs]</a>    <span class="k">def</span> <span class="nf">isOneOfErrorsExists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errors</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_results</span><span class="o">.</span><span class="n">isOneOfErrorsExists</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MCScannedElement.getScan_Results"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCScannedElement.getScan_Results">[docs]</a>    <span class="k">def</span> <span class="nf">getScan_Results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_results</span></div></div>
+
+
+<div class="viewcode-block" id="MCScannedFile"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCScannedFile">[docs]</a><span class="k">class</span> <span class="nc">MCScannedFile</span><span class="p">(</span><span class="n">MCScannedElement</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scanned</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">ntpath</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MCDataFile"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCDataFile">[docs]</a><span class="k">class</span> <span class="nc">MCDataFile</span><span class="p">(</span><span class="n">MCScannedFile</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">MC_FILE_TYPE_DATA</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MCRegionFile"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFile">[docs]</a><span class="k">class</span> <span class="nc">MCRegionFile</span><span class="p">(</span><span class="n">MCScannedFile</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">MC_FILE_TYPE_REGION</span><span class="p">)</span>
+        <span class="n">coordX</span><span class="p">,</span> <span class="n">coordZ</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_coords</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">coordX</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">coordZ</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="MCRegionFile.getScan_Results"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFile.getScan_Results">[docs]</a>    <span class="k">def</span> <span class="nf">getScan_Results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_results</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="n">chunk</span><span class="p">]</span><span class="o">.</span><span class="n">scan_results</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">results</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MCRegionFile.isOneOfErrorsExists"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFile.isOneOfErrorsExists">[docs]</a>    <span class="k">def</span> <span class="nf">isOneOfErrorsExists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">errors</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">super</span><span class="p">(</span><span class="n">MCRegionFile</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">isOneOfErrorsExists</span><span class="p">(</span><span class="n">errors</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="n">chunk</span><span class="p">]</span><span class="o">.</span><span class="n">isOneOfErrorsExists</span><span class="p">(</span><span class="n">errors</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MCRegionFile.isManuelCheckRequired"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFile.isManuelCheckRequired">[docs]</a>    <span class="k">def</span> <span class="nf">isManuelCheckRequired</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">CHUNK_SHARED_OFFSET</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunksByFail</span><span class="p">(</span><span class="n">CHUNK_CORRUPTED</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MCRegionFile.chunksByFail"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFile.chunksByFail">[docs]</a>    <span class="k">def</span> <span class="nf">chunksByFail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_fail</span><span class="p">):</span>
+        <span class="n">machedChunks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">expected_fail</span> <span class="o">==</span> <span class="n">CHUNK_OK</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="n">chunk</span><span class="p">]</span><span class="o">.</span><span class="n">scan_results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">machedChunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="n">chunk</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="n">expected_fail</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="n">chunk</span><span class="p">]</span><span class="o">.</span><span class="n">scan_results</span><span class="p">:</span>
+                <span class="n">machedChunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="n">chunk</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">machedChunks</span></div>
+
+<div class="viewcode-block" id="MCRegionFile.countChunksByFail"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFile.countChunksByFail">[docs]</a>    <span class="k">def</span> <span class="nf">countChunksByFail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">faildMap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">groupChunksByFail</span><span class="p">()</span>
+        <span class="n">fails</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">fail</span> <span class="ow">in</span> <span class="n">faildMap</span><span class="p">:</span>
+            <span class="n">fails</span><span class="p">[</span><span class="n">fail</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">faildMap</span><span class="p">[</span><span class="n">fail</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">fails</span></div>
+
+<div class="viewcode-block" id="MCRegionFile.groupChunksByFail"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFile.groupChunksByFail">[docs]</a>    <span class="k">def</span> <span class="nf">groupChunksByFail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fails</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span>
+            <span class="n">currentChunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="n">chunk</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">currentChunk</span><span class="o">.</span><span class="n">scan_results</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">currentChunk</span><span class="o">.</span><span class="n">scan_results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">fails</span><span class="p">:</span>
+                    <span class="n">successfullChunks</span> <span class="o">=</span> <span class="n">fails</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">successfullChunks</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="n">successfullChunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">currentChunk</span><span class="p">)</span>
+                <span class="n">fails</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">successfullChunks</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">fail</span> <span class="ow">in</span> <span class="n">currentChunk</span><span class="o">.</span><span class="n">scan_results</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">fail</span> <span class="ow">in</span> <span class="n">fails</span><span class="p">:</span>
+                        <span class="n">failedChunks</span> <span class="o">=</span> <span class="n">fails</span><span class="p">[</span><span class="n">fail</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">failedChunks</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">failedChunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">currentChunk</span><span class="p">)</span>
+                    <span class="n">fails</span><span class="p">[</span><span class="n">fail</span><span class="p">]</span> <span class="o">=</span> <span class="n">failedChunks</span>
+        <span class="k">return</span> <span class="n">fails</span></div>
+
+<div class="viewcode-block" id="MCRegionFile.chunksOk"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFile.chunksOk">[docs]</a>    <span class="k">def</span> <span class="nf">chunksOk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="o">.</span><span class="n">hasErrors</span><span class="p">():</span>
+                <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="n">chunk</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">chunks</span></div></div>
+
+
+<div class="viewcode-block" id="MCRegionFileChunk"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFileChunk">[docs]</a><span class="k">class</span> <span class="nc">MCRegionFileChunk</span><span class="p">(</span><span class="n">MCScannedElement</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">region</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
+
+<div class="viewcode-block" id="MCRegionFileChunk.get_global_chunk_coords"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.models.MCRegionFileChunk.get_global_chunk_coords">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_chunk_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">get_global_chunk_coords</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">z</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Minecraft Region Checker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/usage.html">Usage</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

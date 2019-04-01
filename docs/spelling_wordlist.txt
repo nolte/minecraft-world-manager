@@ -1,9 +1,0 @@
-GitLab
-GitHub
-cookiecutter
-SaaS
-IaC
-Submodules
-installable
-Dockerfile
-checkoutbulk

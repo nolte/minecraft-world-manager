@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>mcworldmanager.core.util &#8212; Minecraft Region Checker  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for mcworldmanager.core.util</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">binascii</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="build_analyse_file"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.util.build_analyse_file">[docs]</a><span class="k">def</span> <span class="nf">build_analyse_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">builder</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="scan_folder_content"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.util.scan_folder_content">[docs]</a><span class="k">def</span> <span class="nf">scan_folder_content</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">mcfile</span> <span class="o">=</span> <span class="n">build_analyse_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">builder</span><span class="p">)</span>
+        <span class="n">files</span><span class="p">[</span><span class="n">mcfile</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">mcfile</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Listened files from </span><span class="si">%s</span><span class="s2"> count: </span><span class="si">%i</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">files</span></div>
+
+
+<div class="viewcode-block" id="get_chunk_data_coords"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.util.get_chunk_data_coords">[docs]</a><span class="k">def</span> <span class="nf">get_chunk_data_coords</span><span class="p">(</span><span class="n">nbt_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Gets the coords stored in the NBT structure of the chunk.</span>
+
+<span class="sd">        Takes an nbt obj and returns the coords as integers.</span>
+<span class="sd">        Don&#39;t confuse with get_global_chunk_coords! &quot;&quot;&quot;</span>
+
+    <span class="n">level</span> <span class="o">=</span> <span class="n">nbt_file</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="s2">&quot;Level&quot;</span><span class="p">)</span>
+
+    <span class="n">coordX</span> <span class="o">=</span> <span class="n">level</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="s2">&quot;xPos&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">coordZ</span> <span class="o">=</span> <span class="n">level</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="s2">&quot;zPos&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">return</span> <span class="n">coordX</span><span class="p">,</span> <span class="n">coordZ</span></div>
+
+
+<div class="viewcode-block" id="is_gz_file"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.util.is_gz_file">[docs]</a><span class="k">def</span> <span class="nf">is_gz_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">test_f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">test_f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;1f8b&quot;</span></div>
+
+
+<div class="viewcode-block" id="get_global_chunk_coords"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.util.get_global_chunk_coords">[docs]</a><span class="k">def</span> <span class="nf">get_global_chunk_coords</span><span class="p">(</span><span class="n">chunkX</span><span class="p">,</span> <span class="n">chunkZ</span><span class="p">,</span> <span class="n">regionX</span><span class="p">,</span> <span class="n">regionZ</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Takes the region  coordinates and the chunk local</span>
+<span class="sd">        coords and returns the global chunkcoords as integers. &quot;&quot;&quot;</span>
+    <span class="n">chunkX</span> <span class="o">+=</span> <span class="n">regionX</span> <span class="o">*</span> <span class="mi">32</span>
+    <span class="n">chunkZ</span> <span class="o">+=</span> <span class="n">regionZ</span> <span class="o">*</span> <span class="mi">32</span>
+    <span class="k">return</span> <span class="n">chunkX</span><span class="p">,</span> <span class="n">chunkZ</span></div>
+
+
+<div class="viewcode-block" id="get_coords"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.util.get_coords">[docs]</a><span class="k">def</span> <span class="nf">get_coords</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Splits the region filename (full pathname or just filename)</span>
+<span class="sd">        and returns his region X and Z coordinates as integers. &quot;&quot;&quot;</span>
+    <span class="n">splitted_filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">coordX</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splitted_filename</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">coordZ</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">splitted_filename</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Analyse MC Data File Kords </span><span class="si">%s</span><span class="s2"> </span><span class="si">%i</span><span class="s2"> </span><span class="si">%i</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">coordX</span><span class="p">,</span> <span class="n">coordZ</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;faild to parse </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">InvalidFileName</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">coordX</span><span class="p">,</span> <span class="n">coordZ</span></div>
+
+
+<div class="viewcode-block" id="InvalidFileName"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.util.InvalidFileName">[docs]</a><span class="k">class</span> <span class="nc">InvalidFileName</span><span class="p">(</span><span class="ne">IOError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Minecraft Region Checker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/usage.html">Usage</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

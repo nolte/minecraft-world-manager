@@ -1,0 +1,7 @@
+mcworldmanager
+==============
+
+.. toctree::
+   :maxdepth: 4
+
+   mcworldmanager

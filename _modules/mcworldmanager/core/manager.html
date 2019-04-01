@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>mcworldmanager.core.manager &#8212; Minecraft Region Checker  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for mcworldmanager.core.manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">JoinableQueue</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="k">import</span> <span class="n">ThreadPool</span> <span class="k">as</span> <span class="n">Pool</span>
+
+<span class="kn">import</span> <span class="nn">progressbar</span>
+
+<span class="kn">from</span> <span class="nn">mcworldmanager.core</span> <span class="k">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">mcworldmanager.core.analysers</span> <span class="k">import</span> <span class="n">MCDataFileAnalyser</span><span class="p">,</span> <span class="n">MCRegionFileAnalyser</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ScanningConfig"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.manager.ScanningConfig">[docs]</a><span class="k">class</span> <span class="nc">ScanningConfig</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool_size</span> <span class="o">=</span> <span class="n">pool_size</span></div>
+
+
+<div class="viewcode-block" id="Manager"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.manager.Manager">[docs]</a><span class="k">class</span> <span class="nc">Manager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worlds</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worlds</span> <span class="o">=</span> <span class="n">worlds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">import_options</span> <span class="o">=</span> <span class="n">options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiprocess_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MultiProcessManager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scannd_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scanned_file_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="Manager.WorldFileTask"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.manager.Manager.WorldFileTask">[docs]</a>    <span class="k">class</span> <span class="nc">WorldFileTask</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">world</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">world</span> <span class="o">=</span> <span class="n">world</span></div>
+
+<div class="viewcode-block" id="Manager.start"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.manager.Manager.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">world</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">worlds</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worlds</span><span class="p">[</span><span class="n">world</span><span class="p">]</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WorldFileTask</span><span class="p">(</span><span class="n">world</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Prepare queue with Scanning Tasks </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">))</span>
+        <span class="c1"># self.progress = progressbar.ProgressBar(min_val=1, max_val=len(tasks))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span>
+            <span class="c1"># widgets=[progressbar.SimpleProgress()],</span>
+            <span class="n">widgets</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">AnimatedMarker</span><span class="p">(),</span>
+                <span class="s2">&quot;  &quot;</span><span class="p">,</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">FormatLabel</span><span class="p">(</span><span class="s2">&quot;Processed: </span><span class="si">%(value)d</span><span class="s2"> of: </span><span class="si">%(max_value)d</span><span class="s2"> &quot;</span><span class="p">),</span>
+                <span class="s2">&quot;Percent: &quot;</span><span class="p">,</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">Percentage</span><span class="p">(),</span>
+                <span class="s2">&quot;  &quot;</span><span class="p">,</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">ETA</span><span class="p">(),</span>
+                <span class="s2">&quot; &quot;</span><span class="p">,</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">Bar</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">redirect_stdout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">max_value</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiprocess_manager</span><span class="o">.</span><span class="n">append_tasks</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiprocess_manager</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Finished </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scannd_results</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Scanned </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">scanned</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Manager.MultiProcessManager"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.manager.Manager.MultiProcessManager">[docs]</a>    <span class="k">class</span> <span class="nc">MultiProcessManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manager</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">manager</span> <span class="o">=</span> <span class="n">manager</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataFileAnalyser</span> <span class="o">=</span> <span class="n">MCDataFileAnalyser</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regionFileAnalyser</span> <span class="o">=</span> <span class="n">MCRegionFileAnalyser</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">import_options</span><span class="o">.</span><span class="n">analyse_config</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">JoinableQueue</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">import_options</span><span class="o">.</span><span class="n">pool_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_worker</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">,))</span>
+
+<div class="viewcode-block" id="Manager.MultiProcessManager.task_worker"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.manager.Manager.MultiProcessManager.task_worker">[docs]</a>        <span class="k">def</span> <span class="nf">task_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Start Worker PID: </span><span class="si">%i</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;receive working task </span><span class="si">%s</span><span class="s2"> type </span><span class="si">%i</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_REGION</span><span class="p">:</span>
+                        <span class="n">analyed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regionFileAnalyser</span><span class="o">.</span><span class="n">analyse</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+                        <span class="c1"># RegionCommandlineReport(analyed).show()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">worlds</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">world</span><span class="p">]</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_REGION</span><span class="p">][</span><span class="n">item</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">analyed</span>
+                        <span class="c1"># self.manager.scannd_results.append(analyed)</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_DATA</span><span class="p">:</span>
+                        <span class="n">analyed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataFileAnalyser</span><span class="o">.</span><span class="n">analyse</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">worlds</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">world</span><span class="p">]</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="n">models</span><span class="o">.</span><span class="n">MC_FILE_TYPE_DATA</span><span class="p">][</span><span class="n">item</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">analyed</span>
+                        <span class="c1"># self.manager.scannd_results.append(item)</span>
+                        <span class="c1"># [models.MC_FILE_TYPE_REGION]</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;fail to analse </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">scanned_file_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">scanned_file_count</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">scanned_file_count</span><span class="p">)</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Manager.MultiProcessManager.append_tasks"><a class="viewcode-back" href="../../../api/mcworldmanager.core.html#mcworldmanager.core.manager.Manager.MultiProcessManager.append_tasks">[docs]</a>        <span class="k">def</span> <span class="nf">append_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tasks</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%s</span><span class="s2"> Tasks to queue for Scanning&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">task</span><span class="p">)</span></div></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Minecraft Region Checker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/usage.html">Usage</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

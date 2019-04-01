@@ -1,0 +1,62 @@
+mcworldmanager.core package
+===========================
+
+Submodules
+----------
+
+mcworldmanager.core.analysers module
+------------------------------------
+
+.. automodule:: mcworldmanager.core.analysers
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+mcworldmanager.core.manager module
+----------------------------------
+
+.. automodule:: mcworldmanager.core.manager
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+mcworldmanager.core.models module
+---------------------------------
+
+.. automodule:: mcworldmanager.core.models
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+mcworldmanager.core.reportmarkdown module
+-----------------------------------------
+
+.. automodule:: mcworldmanager.core.reportmarkdown
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+mcworldmanager.core.reportyaml module
+-------------------------------------
+
+.. automodule:: mcworldmanager.core.reportyaml
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+mcworldmanager.core.util module
+-------------------------------
+
+.. automodule:: mcworldmanager.core.util
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: mcworldmanager.core
+    :members:
+    :undoc-members:
+    :show-inheritance:
