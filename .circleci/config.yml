@@ -285,7 +285,7 @@ jobs:
       - run:
           name: execute the pytests documentation
           command: |
-            tox -e py36-test,py27-test
+            tox -e py36,py37
       - store_test_results:
           path: .tox/test/tmp/reports
 
