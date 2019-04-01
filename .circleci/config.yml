@@ -4,7 +4,7 @@ aliases:
   # SSH Deployment key for github Pushing,
   - &deploy_ssh_fingerprint "ca:69:30:3f:10:7b:cb:8d:07:7a:95:fd:6d:45:ee:44"
 
-  - &deploy_ssh_sign_fingerprint "5c:5e:79:96:0e:de:3e:cf:cf:ab:1d:96:da:b8:a8:72"
+  - &deploy_ssh_sign_fingerprint "11:99:29:af:bc:51:f9:54:75:ba:5e:68:ce:c3:65:15"
 
   # add the GitHub Deployment Key to the ssh-agent
   # @see https://circleci.com/docs/2.0/add-ssh-key/
@@ -219,7 +219,7 @@ jobs:
       - run:
           name: execute the fix_lint static tests
           command: |
-            tox -e fix_lint
+            tox -e pycodestyle
 
 
       - store_test_results:
