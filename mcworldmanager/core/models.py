@@ -58,16 +58,13 @@ def build_mc_region_file(path):
 
 class MCValidatesResultObject(list):
     def hasError(self):
-        if len(self) > 0:
+        if self:
             return True
-        else:
+        if not self:
             return False
 
     def isErrorExists(self, error):
-        if error not in self:
-            return False
-        else:
-            return True
+        return error in self
 
     def isOneOfErrorsExists(self, errors):
         for error in errors:
@@ -121,10 +118,10 @@ class MCWorld(object):
                 self[MC_FILE_TYPE_PLAYERS] = util.scan_folder_content(playerPath, build_player_file)
 
         def all(self):
-            all = []
+            allMCFiles = []
             for files in self.values():
-                all.extend(files.values())
-            return all
+                allMCFiles.extend(files.values())
+            return allMCFiles
 
         def getFilesWithOneOfError(self, errors):
             faildFiles = []
@@ -147,10 +144,10 @@ class MCScannedElement(object):
 
 
 class MCScannedFile(MCScannedElement):
-    def __init__(self, path, type):
+    def __init__(self, path, mcFileType):
         super().__init__()
         self.path = path
-        self.type = type
+        self.type = mcFileType
         self.scanned = False
         self.scan_time = None
         self.filename = ntpath.basename(path)
@@ -186,16 +183,13 @@ class MCRegionFile(MCScannedFile):
         return False
 
     def isManuelCheckRequired(self):
-        if (len(self.chunksByFail(CHUNK_SHARED_OFFSET)) > 0) or (len(self.chunksByFail(CHUNK_CORRUPTED)) > 0):
-            return True
-        else:
-            return False
+        return self.isOneOfErrorsExists(SPECIAL_EYES_ERRORS)
 
     def chunksByFail(self, expected_fail):
         machedChunks = []
         for chunk in self.chunks:
             if expected_fail == CHUNK_OK:
-                if len(self.chunks[chunk].scan_results) == 0:
+                if not self.chunks[chunk].scan_results:
                     machedChunks.append(self.chunks[chunk])
 
             elif expected_fail in self.chunks[chunk].scan_results:
@@ -214,7 +208,7 @@ class MCRegionFile(MCScannedFile):
         fails = {}
         for chunk in self.chunks:
             currentChunk = self.chunks[chunk]
-            if not currentChunk.scan_results or len(currentChunk.scan_results) == 0:
+            if not currentChunk.scan_results:
                 if 0 in fails:
                     successfullChunks = fails[0]
                 else:

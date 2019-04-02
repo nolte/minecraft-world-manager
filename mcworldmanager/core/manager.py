@@ -25,16 +25,16 @@ class Manager(object):
         self.scanned_file_count = 0
 
     class WorldFileTask(object):
-        def __init__(self, world, file):
-            self.file = file
+        def __init__(self, world, mcFile):
+            self.file = mcFile
             self.world = world
 
     def start(self):
         tasks = []
         for world in self.worlds:
             files = self.worlds[world].files.all()
-            for file in files:
-                tasks.append(self.WorldFileTask(world, file))
+            for mcFile in files:
+                tasks.append(self.WorldFileTask(world, mcFile))
 
         logger.debug("Prepare queue with Scanning Tasks %s", len(tasks))
         # self.progress = progressbar.ProgressBar(min_val=1, max_val=len(tasks))
