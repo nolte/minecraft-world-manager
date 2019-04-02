@@ -15,8 +15,8 @@ def scan_folder_content(path, builder):
     assert isinstance(path, str)
     assert os.path.isdir(path)
     files = {}
-    for file in os.listdir(path):
-        mcfile = build_analyse_file(os.path.join(path, file), builder)
+    for mcDirElement in os.listdir(path):
+        mcfile = build_analyse_file(os.path.join(path, mcDirElement), builder)
         files[mcfile.filename] = mcfile
 
     logger.debug("Listened files from %s count: %i", path, len(files))
