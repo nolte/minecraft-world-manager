@@ -64,10 +64,7 @@ class MCValidatesResultObject(list):
             return False
 
     def isErrorExists(self, error):
-        if error not in self:
-            return False
-        else:
-            return True
+        return error in self
 
     def isOneOfErrorsExists(self, errors):
         for error in errors:
