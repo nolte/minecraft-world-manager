@@ -186,8 +186,8 @@ class MCRegionFile(MCScannedFile):
         return False
 
     def isManuelCheckRequired(self):
-        return self.isOneOfErrorsExists(SPECIAL_EYES_ERRORS):
-        
+        return self.isOneOfErrorsExists(SPECIAL_EYES_ERRORS)
+
     def chunksByFail(self, expected_fail):
         machedChunks = []
         for chunk in self.chunks:

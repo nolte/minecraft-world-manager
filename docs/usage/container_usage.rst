@@ -32,4 +32,4 @@ Container Run Parameters
   Some Folder mounted to your Host System, used as scanning base folder.
 
 ``[mcworldmanager command]``
-  Using the :ref:`cli-parameters` commandline parameters. 
+  Using the :ref:`cli-parameters` commandline parameters.
