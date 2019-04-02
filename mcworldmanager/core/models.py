@@ -121,10 +121,10 @@ class MCWorld(object):
                 self[MC_FILE_TYPE_PLAYERS] = util.scan_folder_content(playerPath, build_player_file)
 
         def all(self):
-            all = []
+            allMCFiles = []
             for files in self.values():
-                all.extend(files.values())
-            return all
+                allMCFiles.extend(files.values())
+            return allMCFiles
 
         def getFilesWithOneOfError(self, errors):
             faildFiles = []
@@ -147,10 +147,10 @@ class MCScannedElement(object):
 
 
 class MCScannedFile(MCScannedElement):
-    def __init__(self, path, type):
+    def __init__(self, path, mcFileType):
         super().__init__()
         self.path = path
-        self.type = type
+        self.type = mcFileType
         self.scanned = False
         self.scan_time = None
         self.filename = ntpath.basename(path)
