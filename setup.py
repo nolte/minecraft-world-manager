@@ -6,7 +6,7 @@
 
 # and accepts an argument to specify the text encoding
 # Python 3 only projects can skip this import
-from io import open
+import io
 from os import path
 
 # Always prefer setuptools over distutils
@@ -15,7 +15,7 @@ from setuptools import find_packages, setup
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, "README.md"), encoding="utf-8") as f:
+with io.open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 
