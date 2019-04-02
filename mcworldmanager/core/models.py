@@ -208,7 +208,7 @@ class MCRegionFile(MCScannedFile):
         fails = {}
         for chunk in self.chunks:
             currentChunk = self.chunks[chunk]
-            if not currentChunk.scan_results or len(currentChunk.scan_results) == 0:
+            if not currentChunk.scan_results:
                 if 0 in fails:
                     successfullChunks = fails[0]
                 else:
