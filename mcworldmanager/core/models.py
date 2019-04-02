@@ -58,9 +58,9 @@ def build_mc_region_file(path):
 
 class MCValidatesResultObject(list):
     def hasError(self):
-        if len(self) > 0:
+        if self:
             return True
-        else:
+        if not self:
             return False
 
     def isErrorExists(self, error):
