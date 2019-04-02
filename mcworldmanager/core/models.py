@@ -186,7 +186,7 @@ class MCRegionFile(MCScannedFile):
         return False
 
     def isManuelCheckRequired(self):
-        if (self.chunksByFail(CHUNK_SHARED_OFFSET)) or (self.chunksByFail(CHUNK_CORRUPTED)):
+        if self.isOneOfErrorsExists(SPECIAL_EYES_ERRORS):
             return True
         else:
             return False
