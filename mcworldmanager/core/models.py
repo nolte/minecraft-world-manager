@@ -186,7 +186,7 @@ class MCRegionFile(MCScannedFile):
         return False
 
     def isManuelCheckRequired(self):
-        if (len(self.chunksByFail(CHUNK_SHARED_OFFSET)) > 0) or (len(self.chunksByFail(CHUNK_CORRUPTED)) > 0):
+        if (self.chunksByFail(CHUNK_SHARED_OFFSET)) or (self.chunksByFail(CHUNK_CORRUPTED)):
             return True
         else:
             return False
@@ -195,7 +195,7 @@ class MCRegionFile(MCScannedFile):
         machedChunks = []
         for chunk in self.chunks:
             if expected_fail == CHUNK_OK:
-                if len(self.chunks[chunk].scan_results) == 0:
+                if not self.chunks[chunk].scan_results:
                     machedChunks.append(self.chunks[chunk])
 
             elif expected_fail in self.chunks[chunk].scan_results:
