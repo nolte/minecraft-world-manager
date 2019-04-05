@@ -16,7 +16,7 @@ install:
 script:
 - tox
 after_script:
-- "./cc-test-reporter format-coverage -t coverage.py --prefix .tox/py36/tmp/"
+- "./cc-test-reporter format-coverage .tox/py36/tmp/cov.xml -t coverage.py" 
 - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
 env:
   global:
