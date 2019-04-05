@@ -15,18 +15,16 @@ RUN addgroup -g ${PGID} ${CONTAINER_USER} && \
     adduser -D -u ${PUID} -G ${CONTAINER_USER} ${CONTAINER_USER}
 
 
-ARG PIP_VERSION=3.7.0
-RUN pip install tox==${PIP_VERSION}
+ARG TOX_VERSION=3.8.2
+RUN pip install tox==${TOX_VERSION}
 
 RUN apk --no-cache add  \
     tar \
-    git \
     enchant \
     aspell-en \
     aspell
 
 FROM BUILDLAYER as BUILDER
-
 
 ARG APP_FOLDER=/app
 COPY . ${APP_FOLDER}
@@ -36,9 +34,7 @@ RUN mkdir -p ${APP_FOLDER} && \
 USER ${CONTAINER_USER}
 WORKDIR ${APP_FOLDER}
 
-RUN tox -e test,docs
-
-RUN ls -all /app/.tox/dist/
+RUN tox -e py37,docs
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} AS EXECUTOR
 ARG APP_FOLDER=/app
@@ -55,24 +51,12 @@ RUN addgroup -g ${PGID} ${CONTAINER_USER} && \
     mkdir -p ${APP_FOLDER} && \
     chown -R ${CONTAINER_USER}:${CONTAINER_USER} ${APP_FOLDER}
 
-RUN apk --no-cache add \
-    git \
-    openssh-client
-
-# ARG MICROSCANNER_TOKEN
-# RUN apk add --no-cache ca-certificates && update-ca-certificates && \
-#     wget -O /microscanner https://get.aquasec.com/microscanner && \
-#     chmod +x /microscanner && \
-#     /microscanner ${MICROSCANNER_TOKEN} --continue-on-failure && \
-#     rm -rf /microscanner
-
 USER ${CONTAINER_USER}
 
 WORKDIR ${APP_FOLDER}
 
 ENTRYPOINT ["mcworldmanager"]
 CMD ["--help"]
-
 
 ARG VCS_REF
 

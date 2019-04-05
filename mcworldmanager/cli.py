@@ -7,6 +7,7 @@ import sys
 
 import click
 
+from mcworldmanager import __version__
 from mcworldmanager.core import reportmarkdown
 from mcworldmanager.core.analysers import MCRegionFileAnalyser, MCRegionFileAnalyserConfig
 from mcworldmanager.core.manager import Manager, ScanningConfig
@@ -27,7 +28,7 @@ def main(verbose, debug_file):
 @main.command(help="Display the current version.")
 def version():
     """Display the current version."""
-    click.echo("0.0.0.dev")
+    click.echo(__version__)
 
 
 @main.command(help="Analyse a single minecraft region file lile r.-1.-2.mca")
