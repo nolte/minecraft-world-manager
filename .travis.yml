@@ -16,7 +16,7 @@ install:
 script:
 - tox
 after_script:
-- "./cc-test-reporter format-coverage -t coverage.py .tox/py36/tmp/coverage.xml"  
+- "./cc-test-reporter format-coverage -t coverage.py .tox/py36/tmp/coverage.xml"
 - "./cc-test-reporter upload-coverage"
 env:
   global:
