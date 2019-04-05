@@ -17,7 +17,7 @@ Check the Programm Runtime
   sys     0m12,969s
 
 
-Memory Analysing 
+Memory Analysing
 --------------------------------------------------
 
 TODO
