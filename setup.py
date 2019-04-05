@@ -26,6 +26,7 @@ requirements = [
     "pyyaml>=4.2b1",
     "terminaltables==3.1.0",
     "console-menu==0.5.1",
+    "anyconfig==0.9.5",
 ]
 
 setup_requirements = []
@@ -40,7 +41,6 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Natural Language :: German",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],

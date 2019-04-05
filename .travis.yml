@@ -7,7 +7,17 @@ branches:
 python:
 - '3.5'
 - '3.6'
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- "./cc-test-reporter before-build"
 install:
 - pip install tox-travis
 script:
 - tox
+after_script:
+- "./cc-test-reporter format-coverage -t coverage.py .tox/py36/tmp/coverage.xml"
+- "./cc-test-reporter upload-coverage"
+env:
+  global:
+    secure: cRGRvOSZEayqp4CBxRf6qry41kg6YTc/jP+hmEkfLfnUQ8+Lix+bF6rhOTQhJitLKi9lU5SwJTNbXZjW83dnriQ2pjP52qUmviagNIDoIrMJXlzXvsKpLl/O7JHSU2Jk9UFtPA3uQNLXixgdiEIiXGYADco0iQ5jUZ5n8Hap1Nx/0nBcu3DpczgW/7FjTlaEZbjAJtPWYy3RgmAZcs879xVZlcTvgE7uyvqFUrKgLqjZ+7I3E5s8eFxlfqdZ2gPki8nZG4I2TO0JOFsoebNkf1XUJcLXiNW7JqJCjcQE6xnf4T6YWjkHgkd1rGLJrNEXiommkPn5U2jEhkHDVSjryGyoGMMGO3OdIAh6pYKhFHUwNnZUk8iW8VwDYYnGQLh5uQ20Wm5CLibb/YaTRqsC5vrSq0P1+dLWC5neCC7GmjrW3K8zmKzRW6rwXSgySsR6sdZc4xpFgAxjlbkwVydI63X34vphgd/RN0d4mFkmkAwhv/EUdueWVhp5Kv+nnoaHJepY9ojHKAZ7mRHbVxNb9l5eydAQXC2lJsflSndjFdOUzriRVJNeqHHPq+lYCCEEnvUUuECjjct+JAbhsa5XtgReu4n4UhMe0xfFyNAquvY+zFubYuCUBgpQ5E1ZnZDMRf0WfjzCADOhSbk5p1fqiwBseBxxAvF57ISglE3d/6o=
