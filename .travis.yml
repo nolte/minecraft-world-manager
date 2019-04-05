@@ -16,7 +16,7 @@ install:
 script:
 - tox
 after_script:
-- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
+- "./cc-test-reporter after-build coverage.py --exit-code $TRAVIS_TEST_RESULT"
 env:
   global:
     secure: cRGRvOSZEayqp4CBxRf6qry41kg6YTc/jP+hmEkfLfnUQ8+Lix+bF6rhOTQhJitLKi9lU5SwJTNbXZjW83dnriQ2pjP52qUmviagNIDoIrMJXlzXvsKpLl/O7JHSU2Jk9UFtPA3uQNLXixgdiEIiXGYADco0iQ5jUZ5n8Hap1Nx/0nBcu3DpczgW/7FjTlaEZbjAJtPWYy3RgmAZcs879xVZlcTvgE7uyvqFUrKgLqjZ+7I3E5s8eFxlfqdZ2gPki8nZG4I2TO0JOFsoebNkf1XUJcLXiNW7JqJCjcQE6xnf4T6YWjkHgkd1rGLJrNEXiommkPn5U2jEhkHDVSjryGyoGMMGO3OdIAh6pYKhFHUwNnZUk8iW8VwDYYnGQLh5uQ20Wm5CLibb/YaTRqsC5vrSq0P1+dLWC5neCC7GmjrW3K8zmKzRW6rwXSgySsR6sdZc4xpFgAxjlbkwVydI63X34vphgd/RN0d4mFkmkAwhv/EUdueWVhp5Kv+nnoaHJepY9ojHKAZ7mRHbVxNb9l5eydAQXC2lJsflSndjFdOUzriRVJNeqHHPq+lYCCEEnvUUuECjjct+JAbhsa5XtgReu4n4UhMe0xfFyNAquvY+zFubYuCUBgpQ5E1ZnZDMRf0WfjzCADOhSbk5p1fqiwBseBxxAvF57ISglE3d/6o=
