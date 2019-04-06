@@ -139,6 +139,7 @@ class MCWorld(object):
     def hasFilesWithOneOfError(self, expectedErrors):
         return self.files.getFilesWithOneOfError(expectedErrors)
 
+
 class MCScannedElement(object):
     def __init__(self):
         self.scan_results = MCValidatesResultObject()
