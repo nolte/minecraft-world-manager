@@ -22,7 +22,7 @@ def test_CheckExtractedCoordinates(regionFile):
 
 def test_CheckScanResultsKey(regionFile):
     assert regionFile.getScan_Results() == [models.CHUNK_SHARED_OFFSET, models.CHUNK_MISSING_TAG]
-    assert regionFile.isManuelCheckRequired() == True
+    assert regionFile.isManuelCheckRequired()
 
 
 def test_CheckScanResultsKey_non_critical_errors(regionFile):
@@ -30,7 +30,7 @@ def test_CheckScanResultsKey_non_critical_errors(regionFile):
     chunkNonCriticalError = models.MCRegionFileChunk(regionFile, 0, 2)
     chunkNonCriticalError.scan_results = models.MCValidatesResultObject([models.CHUNK_MISSING_TAG])
     regionFile.chunks = {(0, 0): chunkNoErrors, (0, 2): chunkNonCriticalError}
-    assert regionFile.isManuelCheckRequired() == False
+    assert not regionFile.isManuelCheckRequired()
 
 
 def test_select_chunks_without_errors(regionFile):

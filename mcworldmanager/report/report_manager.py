@@ -1,17 +1,5 @@
-import os
-
-import yaml
-from yaml import dump, load
-
 from mcworldmanager.core import models
-from mcworldmanager.core.util import colors, special_chars
 from mcworldmanager.report import region_reporter
-
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
-
 
 REPORT_TYPE_YAML = "YAML"
 REPORT_TYPE_MARKDOWN = "MARKDOWN"

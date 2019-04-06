@@ -2,17 +2,10 @@ import os
 
 import yaml
 from terminaltables import AsciiTable
-from yaml import dump, load
 
 from mcworldmanager.core import models
 from mcworldmanager.core.util import colors
 from mcworldmanager.report import report_utils
-
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
-
 
 REPORT_DETAIL_LEVEL_MINIMAL = "MINIMAL"
 

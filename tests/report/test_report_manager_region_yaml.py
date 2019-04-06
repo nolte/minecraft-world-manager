@@ -2,16 +2,9 @@ import os
 from unittest.mock import MagicMock
 
 import pytest
-from yaml import dump, load
 
 from mcworldmanager.core import models
 from mcworldmanager.report import region_reporter
-
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
-
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
