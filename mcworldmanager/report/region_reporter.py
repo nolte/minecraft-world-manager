@@ -1,19 +1,21 @@
 import os
-from terminaltables import AsciiTable
-
-from yaml import load, dump
 
 import yaml
+from terminaltables import AsciiTable
+from yaml import dump, load
+
+from mcworldmanager.core import models
+from mcworldmanager.core.util import colors
+from mcworldmanager.report import report_utils
+
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
     from yaml import Loader, Dumper
 
-from mcworldmanager.core import models
-from mcworldmanager.report import report_utils
-from mcworldmanager.core.util import colors
 
 REPORT_DETAIL_LEVEL_MINIMAL = "MINIMAL"
+
 
 class Report(object):
     def __init__(self, config, successfull):
@@ -24,8 +26,8 @@ class Report(object):
         return self.successfull
 
     def toYaml(self):
-        return {"successfull": self.successfull}  
-    
+        return {"successfull": self.successfull}
+
 
 class RegionReport(Report):
     def __init__(self, config, region):
@@ -47,7 +49,7 @@ class RegionReport(Report):
 
     def toCommandline(self):
         report = ""
-        report += report_utils.text_blod("Region Report")+os.linesep
+        report += report_utils.text_blod("Region Report") + os.linesep
         report += report_utils.line_sperator()
 
         if self.wasSuccessfull():
@@ -55,7 +57,7 @@ class RegionReport(Report):
         else:
             statusIcon = report_utils.icon_fail()
 
-        report += "file: {:} {:}".format(report_utils.text_blod(self.region.filename),statusIcon) 
+        report += "file: {:} {:}".format(report_utils.text_blod(self.region.filename), statusIcon)
         report += os.linesep
 
         table_data = [report_utils.WORLD_REGION_TABLE_HEADLINE]
@@ -66,11 +68,10 @@ class RegionReport(Report):
         report += table.table
         report += os.linesep
         if self.region.isManuelCheckRequired():
-            report += os.linesep+ "{:}Corrupted Chunks: {:} ".format(colors.bold, colors.reset) +os.linesep
+            report += os.linesep + "{:}Corrupted Chunks: {:} ".format(colors.bold, colors.reset) + os.linesep
             report += report_utils.build_chunkTable(self.region.chunksByFail(models.SPECIAL_EYES_ERRORS))
 
-
-        return report    
+        return report
 
     def toYaml(self):
         baseYaml = super().toYaml()
@@ -85,8 +86,8 @@ class RegionReport(Report):
                         "x": chunk.x,
                         "z": chunk.z,
                         "global_x": globalCords[0],
-                        "global_z": globalCords[1],                        
-                        "reasons": list(chunk.scan_results)
+                        "global_z": globalCords[1],
+                        "reasons": list(chunk.scan_results),
                     }
                     baseYaml["chunks"].append(chunkObj)
 
@@ -119,7 +120,8 @@ class WorldReporter(Report):
             worldRegionRow["all"] += len(region.chunks)
             worldRegionRow[models.CHUNK_NOT_CREATED] += len(region.chunksByFail(models.CHUNK_NOT_CREATED))
 
-        return worldRegionRow.values()    
+        return worldRegionRow.values()
+
 
 class WorldsReporter(Report):
     def __init__(self, config, worlds):
@@ -128,7 +130,7 @@ class WorldsReporter(Report):
 
     def toCommandline(self):
         report = ""
-        report += report_utils.text_blod("Worlds Analyse Report")+os.linesep
+        report += report_utils.text_blod("Worlds Analyse Report") + os.linesep
         report += report_utils.line_sperator()
 
         table_data = []
@@ -138,16 +140,16 @@ class WorldsReporter(Report):
 
         for world in self.worlds:
             row = []
-            
+
             files = []
-            
+
             currentWorld = self.worlds[world]
             if currentWorld.hasFilesWithOneOfError(models.SPECIAL_EYES_ERRORS):
                 worldStatusIcon = report_utils.icon_fail()
             else:
                 worldStatusIcon = report_utils.icon_success()
 
-            currentName = "{:} {:}".format(currentWorld.name,worldStatusIcon)
+            currentName = "{:} {:}".format(currentWorld.name, worldStatusIcon)
 
             row.append(currentName)
             files.append(currentName)
@@ -156,7 +158,11 @@ class WorldsReporter(Report):
                 if failFile.type == models.MC_FILE_TYPE_REGION:
                     scan_results_list = failFile.getScan_Results()
 
-                eyes_row = [currentWorld.name, failFile.filename, str(report_utils.build_human_readable_errorList(scan_results_list)) ]
+                eyes_row = [
+                    currentWorld.name,
+                    failFile.filename,
+                    str(report_utils.build_human_readable_errorList(scan_results_list)),
+                ]
                 special_eyes_data.append(eyes_row)
 
             files.append(str(len(currentWorld.files[models.MC_FILE_TYPE_REGION])))
@@ -170,15 +176,15 @@ class WorldsReporter(Report):
             table_data.append(row)
             overview_table_data.append(files)
 
-        report += report_utils.drawTable(overview_table_headline,overview_table_data)+os.linesep
+        report += report_utils.drawTable(overview_table_headline, overview_table_data) + os.linesep
         report += os.linesep
-        report += report_utils.text_blod("Report Overview")+os.linesep
-        report += report_utils.drawTable(report_utils.WORLD_REGION_TABLE_HEADLINE,table_data)+os.linesep
-        
+        report += report_utils.text_blod("Report Overview") + os.linesep
+        report += report_utils.drawTable(report_utils.WORLD_REGION_TABLE_HEADLINE, table_data) + os.linesep
+
         if special_eyes_data:
             report += os.linesep
-            report += report_utils.text_blod("Special Eye Files")+os.linesep
-            SPECIAL_EYES_HEADLINE = ["World","File","Problems"]
-            report += report_utils.drawTable(SPECIAL_EYES_HEADLINE,special_eyes_data)+os.linesep
+            report += report_utils.text_blod("Special Eye Files") + os.linesep
+            SPECIAL_EYES_HEADLINE = ["World", "File", "Problems"]
+            report += report_utils.drawTable(SPECIAL_EYES_HEADLINE, special_eyes_data) + os.linesep
 
-        return report        
+        return report

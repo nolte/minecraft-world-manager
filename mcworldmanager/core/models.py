@@ -94,7 +94,7 @@ class MCWorlds(dict):
         return allTasks
 
     def hasCorruptedWorld(self):
-        return True   
+        return True
 
 
 class MCWorld(object):
@@ -142,6 +142,7 @@ class MCWorld(object):
             return True
         else:
             return False
+
 
 class MCScannedElement(object):
     def __init__(self):
