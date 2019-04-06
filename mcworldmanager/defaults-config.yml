@@ -6,7 +6,7 @@ report:
     - MARKDOWN
     - YAML
 multiprocess:
-  paralell: 1
+  pool_size: 2
 
 roles:
   chunk_entity_limit: -1
