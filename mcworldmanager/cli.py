@@ -14,9 +14,8 @@ from mcworldmanager.core.analysers import MCRegionFileAnalyser
 from mcworldmanager.core.manager import Manager
 from mcworldmanager.core.models import MCRegionFile, MCWorlds
 from mcworldmanager.log import configure_logger
+
 logger = logging.getLogger(__name__)
-
-
 
 
 @click.group()
@@ -26,7 +25,7 @@ logger = logging.getLogger(__name__)
 def main(ctx, verbose, debug_file):
     """Console script for mcworldmanager."""
     configure_logger(stream_level="DEBUG" if verbose else "INFO", debug_file=debug_file)
-    
+
     # ensure that ctx.obj exists and is a dict (in case `cli()` is called
     # by means other than the `if` block below
     ctx.ensure_object(dict)
@@ -64,7 +63,7 @@ def region(ctx, region_file_path):
 def worlds(ctx, worlds_directories):
     click.echo("start scanning")
     worlds = MCWorlds(worlds_directories)
-    manager = Manager(worlds,  ctx.obj["config"])
+    manager = Manager(worlds, ctx.obj["config"])
     manager.start()
     report = reportmarkdown.WorldsReporter(worlds).report("")
     print(report)
