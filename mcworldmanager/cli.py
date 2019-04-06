@@ -31,7 +31,6 @@ def main(ctx, verbose, output_format, debug_file):
     # ensure that ctx.obj exists and is a dict (in case `cli()` is called
     # by means other than the `if` block below
     ctx.ensure_object(dict)
-    commandLineConfig = {}
     ctx.obj["config"] = anyconfig.load(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "./defaults-config.yml")
     )
