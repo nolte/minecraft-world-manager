@@ -10,7 +10,14 @@ REPORT_DETAIL_LEVEL_MINIMAL = "MINIMAL"
 
 
 def createReport(config, reportedObject):
+    reporter = None
     if isinstance(reportedObject, models.MCRegionFile):
-        print(region_reporter.RegionReport(config, reportedObject).toCommandline())
-    if isinstance(reportedObject, models.MCWorlds):
-        print(region_reporter.WorldsReporter(config, reportedObject).toCommandline())
+        reporter = region_reporter.RegionReport(config, reportedObject) 
+    elif isinstance(reportedObject, models.MCWorlds):
+        reporter = region_reporter.WorldsReporter(config, reportedObject)
+
+    if reporter:
+        if config["report"]["format"] == REPORT_TYPE_COMMAND_LINE:
+            print(reporter.toCommandline())
+        elif config["report"]["format"] == REPORT_TYPE_YAML:
+            print(reporter.toYaml())

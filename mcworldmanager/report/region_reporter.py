@@ -89,8 +89,18 @@ class RegionReport(Report):
 
 class WorldReporter(Report):
     def __init__(self, config, world):
-        super().__init__(config, False)
+        super().__init__(config, not world.hasFilesWithOneOfError(models.SPECIAL_EYES_ERRORS))
         self.world = world
+
+    def toYaml(self):
+        baseYaml = super().toYaml()
+        corruptedFiles =  {}
+        corruptedFilesList = self.world.files.getFilesWithOneOfError(models.SPECIAL_EYES_ERRORS)
+        for file in corruptedFilesList:
+            corruptedFiles[file.filename] = {"type": file.type,"path": file.path, "problems": file.getScan_Results() }
+        if corruptedFiles:
+            baseYaml["corrupted"] = corruptedFiles
+        return baseYaml
 
     def regionCollectedRow(self):
         worldRegionRow = {}
@@ -120,6 +130,16 @@ class WorldsReporter(Report):
     def __init__(self, config, worlds):
         super().__init__(config, not worlds.hasCorruptedWorld())
         self.worlds = worlds
+
+    def toYaml(self):
+        baseYaml = super().toYaml()
+        worlds = {}
+        for world in self.worlds:
+            currentWorld = self.worlds[world]
+            worlds[world] = WorldReporter(self.config, currentWorld).toYaml()
+
+        baseYaml["worlds"] = worlds
+        return yaml.dump(baseYaml)
 
     def toCommandline(self):
         report = ""

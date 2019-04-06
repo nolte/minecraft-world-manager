@@ -2,10 +2,9 @@ report:
   details_level: MINIMAL
   outputs:
     - CONSOLE
-  formats:
-#    - MARKDOWN
+  format: YAML
 #    - YAML
-    - COMMANDLINE
+#    - COMMANDLINE
 multiprocess:
   pool_size: 2
 
