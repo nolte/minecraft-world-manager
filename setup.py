@@ -52,7 +52,7 @@ setup(
     long_description_content_type="text/markdown",
     keywords="minecraft",
     name="mcworldmanager",
-    packages=find_packages(include=["mcworldmanager", "mcworldmanager.core"]),
+    packages=find_packages(include=["mcworldmanager", "mcworldmanager.core", "mcworldmanager.report"]),
     setup_requires=setup_requirements,
     test_suite="tests",
     tests_require=test_requirements,

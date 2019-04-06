@@ -9,7 +9,7 @@ import click
 
 from mcworldmanager import __version__
 from mcworldmanager.config_manager import configure_conf
-from mcworldmanager.core import reportmarkdown
+from mcworldmanager.report import reportmarkdown
 from mcworldmanager.core.analysers import MCRegionFileAnalyser
 from mcworldmanager.core.manager import Manager
 from mcworldmanager.core.models import MCRegionFile, MCWorlds
