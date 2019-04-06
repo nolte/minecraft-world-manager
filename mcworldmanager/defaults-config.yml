@@ -1,0 +1,7 @@
+report:
+  details_level: MINIMAL
+  outputs:
+    - CONSOLE
+  formats:
+    - MARKDOWN
+    - YAML  

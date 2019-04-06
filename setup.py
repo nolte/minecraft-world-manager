@@ -59,4 +59,5 @@ setup(
     url="https://github.com/nolte/minecraft-world-manager",
     version="0.1.0.dev",
     zip_safe=False,
+    include_package_data=True,
 )

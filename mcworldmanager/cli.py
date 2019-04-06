@@ -4,8 +4,10 @@
 
 import logging
 import sys
+import os
 
 import click
+import anyconfig
 
 from mcworldmanager import __version__
 from mcworldmanager.core import reportmarkdown
@@ -23,6 +25,9 @@ logger = logging.getLogger(__name__)
 def main(verbose, debug_file):
     """Console script for mcworldmanager."""
     configure_logger(stream_level="DEBUG" if verbose else "INFO", debug_file=debug_file)
+    conf1 = anyconfig.load(os.path.join(os.path.dirname(os.path.abspath(__file__)),"./defaults-config.yml"))
+    print(conf1)
+
 
 
 @main.command(help="Display the current version.")
