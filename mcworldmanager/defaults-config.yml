@@ -2,7 +2,7 @@ report:
   details_level: MINIMAL
   format: COMMANDLINE # YAML
 multiprocess:
-  pool_size: 2
+  pool_size: 4
 
 roles:
   chunk_entity_limit: -1
