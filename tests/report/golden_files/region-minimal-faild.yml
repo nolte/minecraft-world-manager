@@ -1,0 +1,9 @@
+chunks:
+- global_x: -32
+  global_z: -64
+  reasons:
+  - 4
+  x: 0
+  z: 0
+filename: r.-1.-2.mca
+successfull: false

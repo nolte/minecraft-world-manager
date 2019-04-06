@@ -9,11 +9,11 @@ import click
 
 from mcworldmanager import __version__
 from mcworldmanager.config_manager import configure_conf
-from mcworldmanager.report import reportmarkdown
 from mcworldmanager.core.analysers import MCRegionFileAnalyser
 from mcworldmanager.core.manager import Manager
 from mcworldmanager.core.models import MCRegionFile, MCWorlds
 from mcworldmanager.log import configure_logger
+from mcworldmanager.report import report_manager
 
 logger = logging.getLogger(__name__)
 
@@ -45,11 +45,13 @@ def version(ctx):
 @click.pass_context
 def region(ctx, region_file_path):
     click.echo("Analyse Single Region file")
-    analyser = MCRegionFileAnalyser(ctx.obj["config"])
+    config = ctx.obj["config"]
+    analyser = MCRegionFileAnalyser(config)
     mcRegion = MCRegionFile(region_file_path)
     analyser.analyse(mcRegion)
-    report = reportmarkdown.RegionReporter(mcRegion).report("")
-    print(report)
+    report_manager.createReport(config, mcRegion)
+    # report = reportmarkdown.RegionReporter(mcRegion).report("")
+    # print(report)
 
     if mcRegion.isManuelCheckRequired():
         sys.exit(1)
@@ -63,7 +65,9 @@ def region(ctx, region_file_path):
 def worlds(ctx, worlds_directories):
     click.echo("start scanning")
     worlds = MCWorlds(worlds_directories)
-    manager = Manager(worlds, ctx.obj["config"])
+    config = ctx.obj["config"]
+    manager = Manager(worlds, config)
     manager.start()
-    report = reportmarkdown.WorldsReporter(worlds).report("")
-    print(report)
+    report_manager.createReport(config, worlds)
+    # report = reportmarkdown.WorldsReporter(worlds).report("")
+    # print(report)
