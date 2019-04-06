@@ -4,4 +4,9 @@ report:
     - CONSOLE
   formats:
     - MARKDOWN
-    - YAML  
+    - YAML
+multiprocess:
+  paralell: 1
+
+roles:
+  chunk_entity_limit: -1

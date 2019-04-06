@@ -3,13 +3,13 @@
 """Main `mcworldmanager` CLI."""
 
 import logging
-import sys
 import os
+import sys
 
 import click
-import anyconfig
 
 from mcworldmanager import __version__
+from mcworldmanager.config_manager import configure_conf
 from mcworldmanager.core import reportmarkdown
 from mcworldmanager.core.analysers import MCRegionFileAnalyser, MCRegionFileAnalyserConfig
 from mcworldmanager.core.manager import Manager, ScanningConfig
@@ -18,6 +18,8 @@ from mcworldmanager.log import configure_logger
 
 logger = logging.getLogger(__name__)
 
+base_config = {}
+
 
 @click.group()
 @click.option("-v", "--verbose", is_flag=True, help="Print debug information", default=False)
@@ -25,9 +27,7 @@ logger = logging.getLogger(__name__)
 def main(verbose, debug_file):
     """Console script for mcworldmanager."""
     configure_logger(stream_level="DEBUG" if verbose else "INFO", debug_file=debug_file)
-    conf1 = anyconfig.load(os.path.join(os.path.dirname(os.path.abspath(__file__)),"./defaults-config.yml"))
-    print(conf1)
-
+    base_config = configure_conf()
 
 
 @main.command(help="Display the current version.")
@@ -40,7 +40,7 @@ def version():
 @click.argument("region_file_path", nargs=1, type=click.Path())
 def region(region_file_path):
     click.echo("Analyse Single Region file")
-    analyser = MCRegionFileAnalyser(MCRegionFileAnalyserConfig(-1))
+    analyser = MCRegionFileAnalyser(base_config)
     mcRegion = MCRegionFile(region_file_path)
     analyser.analyse(mcRegion)
     report = reportmarkdown.RegionReporter(mcRegion).report("")
@@ -56,7 +56,7 @@ def region(region_file_path):
 @click.argument("worlds_directories", nargs=-1, type=click.Path())
 def worlds(worlds_directories):
     options = ScanningConfig(2)
-    options.analyse_config = MCRegionFileAnalyserConfig(-1)
+    options.analyse_config = base_config
     click.echo("start scanning")
     worlds = MCWorlds(worlds_directories)
     manager = Manager(worlds, options)
