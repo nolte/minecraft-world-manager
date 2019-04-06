@@ -13,7 +13,6 @@ except ImportError:
     from yaml import Loader, Dumper
 
 
-
 REPORT_TYPE_YAML = "YAML"
 REPORT_TYPE_MARKDOWN = "MARKDOWN"
 REPORT_TYPE_COMMAND_LINE = "COMMANDLINE"

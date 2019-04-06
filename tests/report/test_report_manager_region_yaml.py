@@ -13,7 +13,6 @@ except ImportError:
     from yaml import Loader, Dumper
 
 
-
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
