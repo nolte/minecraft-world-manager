@@ -42,12 +42,12 @@ def test_select_chunks_without_errors(regionFile):
 
 def test_select_chunks_with_error(regionFile):
     assert len(regionFile.chunksByFail(models.CHUNK_SHARED_OFFSET)) == 1
-    assert len(regionFile.chunksByFail(models.CHUNK_NOT_CREATED)) == 0
+    assert not regionFile.chunksByFail(models.CHUNK_NOT_CREATED)
 
 
 def test_select_chunks_with_error_as_Array(regionFile):
     assert len(regionFile.chunksByFail([models.CHUNK_SHARED_OFFSET])) == 1
-    assert len(regionFile.chunksByFail([models.CHUNK_NOT_CREATED])) == 0
+    assert not regionFile.chunksByFail([models.CHUNK_NOT_CREATED])
 
 
 def test_select_chunks_with_one_of_errors(regionFile):
