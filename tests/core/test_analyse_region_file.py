@@ -1,7 +1,7 @@
 import os
 
 from mcworldmanager.core import models
-from mcworldmanager.core.analysers import MCRegionFileAnalyser, MCRegionFileAnalyserConfig
+from mcworldmanager.core.analysers import MCRegionFileAnalyser
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 # sys.path.insert(0, myPath + '/../')
@@ -26,7 +26,9 @@ def test_scan_regionfile():
     assert 0 == regionFile.z
     assert regionFile.type == models.MC_FILE_TYPE_REGION
     assert regionFile.path == regionFilePath
-    analyser = MCRegionFileAnalyser(MCRegionFileAnalyserConfig(-1))
+    config = {"roles": {"chunk_entity_limit": -1}}
+
+    analyser = MCRegionFileAnalyser(config)
     analyser.analyse(regionFile)
     assert regionFile.scanned
     assert 1024 == len(regionFile.chunks)

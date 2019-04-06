@@ -11,11 +11,6 @@ from mcworldmanager.core.analysers import MCDataFileAnalyser, MCRegionFileAnalys
 logger = logging.getLogger(__name__)
 
 
-class ScanningConfig(object):
-    def __init__(self, pool_size=2):
-        self.pool_size = pool_size
-
-
 class Manager(object):
     def __init__(self, worlds, options):
         self.worlds = worlds
@@ -66,9 +61,9 @@ class Manager(object):
         def __init__(self, manager):
             self.manager = manager
             self.dataFileAnalyser = MCDataFileAnalyser()
-            self.regionFileAnalyser = MCRegionFileAnalyser(manager.import_options.analyse_config)
+            self.regionFileAnalyser = MCRegionFileAnalyser(manager.import_options)
             self.queue = JoinableQueue()
-            self.pool = Pool(manager.import_options.pool_size, self.task_worker, (self.queue,))
+            self.pool = Pool(manager.import_options["multiprocess"]["pool_size"], self.task_worker, (self.queue,))
 
         def task_worker(self, queue):
             logger.debug("Start Worker PID: %i", os.getpid())

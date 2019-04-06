@@ -18,11 +18,6 @@ from mcworldmanager.core import models, util
 logger = logging.getLogger(__name__)
 
 
-class MCRegionFileAnalyserConfig(object):
-    def __init__(self, entity_limit):
-        self.entity_limit = entity_limit
-
-
 class MCDataFileAnalyser(object):
     def analyse(self, data_file):
         try:
@@ -111,7 +106,9 @@ class MCRegionFileAnalyser(object):
             if data_coords != global_coords:
                 scan_results.append(models.CHUNK_WRONG_LOCATED)
 
-            if (self.analyse_config.entity_limit >= 0) and (num_entities > self.analyse_config.entity_limit):
+            if (self.analyse_config["roles"]["chunk_entity_limit"] >= 0) and (
+                num_entities > self.analyse_config["roles"]["chunk_entity_limit"]
+            ):
                 scan_results.append(models.CHUNK_TOO_MANY_ENTITIES)
 
             del nbt_chunk

@@ -34,6 +34,7 @@ SPECIAL_EYES_ERRORS = [
     DATA_IO_ERROR,
     DATA_MALFORMED_FILE_ERROR,
     CHUNK_SHARED_OFFSET_CROSS,
+    CHUNK_SHARED_OFFSET,
     CHUNK_CORRUPTED,
 ]
 
@@ -67,11 +68,12 @@ class MCValidatesResultObject(list):
         return error in self
 
     def isOneOfErrorsExists(self, errors):
-        for error in errors:
-            if self.isErrorExists(error):
-                return True
-
-        return False
+        if isinstance(errors, list):
+            for error in errors:
+                if self.isErrorExists(error):
+                    return True
+        else:
+            return self.isErrorExists(errors)
 
 
 class MCWorlds(dict):
@@ -89,6 +91,9 @@ class MCWorlds(dict):
             allTasks.extend(self[world].files.all())
 
         return allTasks
+
+    def hasCorruptedWorld(self):
+        return True
 
 
 class MCWorld(object):
@@ -131,6 +136,9 @@ class MCWorld(object):
                         faildFiles.append(self[fileType][fileName])
             return faildFiles
 
+    def hasFilesWithOneOfError(self, expectedErrors):
+        return self.files.getFilesWithOneOfError(expectedErrors)
+
 
 class MCScannedElement(object):
     def __init__(self):
@@ -141,6 +149,9 @@ class MCScannedElement(object):
 
     def getScan_Results(self):
         return self.scan_results
+
+    def hasErrors(self):
+        return self.scan_results.hasError()
 
 
 class MCScannedFile(MCScannedElement):
@@ -188,12 +199,12 @@ class MCRegionFile(MCScannedFile):
     def chunksByFail(self, expected_fail):
         machedChunks = []
         for chunk in self.chunks:
+            currentChunk = self.chunks[chunk]
             if expected_fail == CHUNK_OK:
-                if not self.chunks[chunk].scan_results:
-                    machedChunks.append(self.chunks[chunk])
-
-            elif expected_fail in self.chunks[chunk].scan_results:
-                machedChunks.append(self.chunks[chunk])
+                if not currentChunk.scan_results:
+                    machedChunks.append(currentChunk)
+            elif currentChunk.scan_results.isOneOfErrorsExists(expected_fail):
+                machedChunks.append(currentChunk)
         return machedChunks
 
     def countChunksByFail(self):
@@ -229,7 +240,8 @@ class MCRegionFile(MCScannedFile):
     def chunksOk(self):
         chunks = []
         for chunk in self.chunks:
-            if not chunk.hasErrors():
+            currentChunk = self.chunks[chunk]
+            if not currentChunk.scan_results:
                 chunks.append(self.chunks[chunk])
 
         return chunks
