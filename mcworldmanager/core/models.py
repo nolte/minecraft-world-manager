@@ -138,11 +138,7 @@ class MCWorld(object):
             return faildFiles
 
     def hasFilesWithOneOfError(self, expectedErrors):
-        if self.files.getFilesWithOneOfError(expectedErrors):
-            return True
-        else:
-            return False
-
+        return self.files.getFilesWithOneOfError(expectedErrors)
 
 class MCScannedElement(object):
     def __init__(self):
