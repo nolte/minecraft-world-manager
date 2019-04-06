@@ -72,7 +72,6 @@ class MCValidatesResultObject(list):
             for error in errors:
                 if self.isErrorExists(error):
                     return True
-            return False
         else:
             return self.isErrorExists(errors)
 
