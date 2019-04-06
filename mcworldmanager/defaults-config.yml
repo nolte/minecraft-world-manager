@@ -3,8 +3,9 @@ report:
   outputs:
     - CONSOLE
   formats:
-    - MARKDOWN
-    - YAML
+#    - MARKDOWN
+#    - YAML
+    - COMMANDLINE
 multiprocess:
   pool_size: 2
 

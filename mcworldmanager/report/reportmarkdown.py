@@ -1,9 +1,9 @@
 import logging
-
+import os
 from terminaltables import AsciiTable
 
 from mcworldmanager.core import models
-
+from mcworldmanager.core.util import colors,special_chars
 logger = logging.getLogger(__name__)
 
 
@@ -19,6 +19,38 @@ WORLD_REGION_TABLE_HEADLINE = [
     "Not Created",
 ]
 
+ERROR_TEXT_MAPPING = {
+    models.CHUNK_CORRUPTED: "Corrupted",
+    models.CHUNK_WRONG_LOCATED: "Wrong l.",
+    models.CHUNK_TOO_MANY_ENTITIES: "Entities",
+    models.CHUNK_SHARED_OFFSET: "Shared offset",
+    models.CHUNK_MISSING_TAG: "Missing tag",
+    models.CHUNK_NOT_CREATED: "Not Created",
+}
+
+
+def build_human_readable_errorList(errors):
+    failString = ""
+    for error in errors:
+        failString += "{:}, ".format(ERROR_TEXT_MAPPING[error])
+
+    return failString
+
+def build_chunkTable(chunks):
+    
+    CHUNKS_HEADLINE = [
+        "x",
+        "z",
+        "global_x",
+        "global_z",
+        "Problems",
+    ]
+    table_data = [CHUNKS_HEADLINE]
+    for chunk in chunks:
+        row = [chunk.x,  chunk.z , chunk.get_global_chunk_coords()[0], chunk.get_global_chunk_coords()[1],build_human_readable_errorList(chunk.scan_results)]
+        table_data.append(row)
+    table = AsciiTable(table_data)
+    return table.table
 
 class WorldsReporter(object):
     def __init__(self, worlds):
@@ -99,28 +131,48 @@ class WorldReporter(object):
 
 
 class RegionReporter(object):
-    def __init__(self, region):
+    def __init__(self,details_level, region):
         self.region = region
+        self.details_level = details_level
 
     def report(self, report):
-        report += "# Region " + "{:} ({:d},{:d})".format(self.region.filename, self.region.x, self.region.z) + "\n\n"
+        
+        report += "{:}{:}{:} ".format(colors.bold, "Region File Report", colors.reset)
+        report += os.linesep+"--------------------------------------------------"+os.linesep   
+        report += "file: {:} {:} {:} ".format(colors.bold, self.region.filename, colors.reset)
+       
+        if self.region.isManuelCheckRequired():
+            statusChar = special_chars.ballot_heavy
+            statusColor = colors.fg.red
+        else:
+            statusChar = special_chars.check_heavy
+            statusColor = colors.fg.green
+
+        report += "{:} {:} {:}".format(statusColor, statusChar, colors.reset)
+        report += os.linesep
+        report += os.linesep+ "{:}Details: {:} ".format(colors.bold, colors.reset) +os.linesep
+        #report += "# Region " + "{:} ({:d},{:d})".format(self.region.filename, self.region.x, self.region.z) + "\n\n"
         table_data = [WORLD_REGION_TABLE_HEADLINE]
 
         row = ["Counts"]
-
         row.extend(self.getRegionRow())
         table_data.append(row)
         table = AsciiTable(table_data)
         report += table.table
-        report += "\n\n## Chunks Report \n\n"
-        faildGroups = self.region.groupChunksByFail()
-        for resultGroup in faildGroups:
-            report += "### Fails " + "{:}".format(resultGroup) + "\n\n"
-            chunk_table_data = [["index", "x", "z", "Global X", "Global Y"]]
-            chunk_table_data.extend(self.getChunksRows(faildGroups[resultGroup]))
-            table = AsciiTable(chunk_table_data)
-            report += table.table
-            report += "\n\n"
+        report += os.linesep
+        if self.region.isManuelCheckRequired():
+            report += os.linesep+ "{:}Corrupted Chunks: {:} ".format(colors.bold, colors.reset) +os.linesep
+            report += build_chunkTable(self.region.chunksByFail(models.SPECIAL_EYES_ERRORS))
+
+        #report += "\n\n## Chunks Report \n\n"
+        #faildGroups = self.region.groupChunksByFail()
+        #for resultGroup in faildGroups:
+        #    report += "### Fails " + "{:}".format(resultGroup) + "\n\n"
+        #    chunk_table_data = [["index", "x", "z", "Global X", "Global Y"]]
+        #    chunk_table_data.extend(self.getChunksRows(faildGroups[resultGroup]))
+        #    table = AsciiTable(chunk_table_data)
+        #    report += table.table
+        #    report += "\n\n"
 
         return report
 

@@ -199,7 +199,6 @@ class MCRegionFile(MCScannedFile):
                 if not currentChunk.scan_results:
                     machedChunks.append(currentChunk)
             elif currentChunk.scan_results.isOneOfErrorsExists(expected_fail):
-                print("mached")
                 machedChunks.append(currentChunk)
         return machedChunks
 

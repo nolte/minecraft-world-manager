@@ -1,4 +1,5 @@
 
+import os
 from yaml import load, dump
 import yaml
 try:
@@ -8,9 +9,11 @@ except ImportError:
 
 
 from mcworldmanager.core import models
-
+from mcworldmanager.core.util import colors,special_chars
+from mcworldmanager.report import reportmarkdown
 REPORT_TYPE_YAML = "YAML"
 REPORT_TYPE_MARKDOWN = "MARKDOWN"
+REPORT_TYPE_COMMAND_LINE = "COMMANDLINE"
 #from mcworldmanager.report import reportmarkdown, reportyaml
 
 REPORT_DETAIL_LEVEL_MINIMAL = "MINIMAL"
@@ -18,7 +21,8 @@ REPORT_DETAIL_LEVEL_MINIMAL = "MINIMAL"
 def createReport(config, reportedObject):
     formatter = {
         REPORT_TYPE_YAML: YamlReporter(config),
-        REPORT_TYPE_MARKDOWN: MarkdownReporter(config) ,
+        REPORT_TYPE_MARKDOWN: MarkdownReporter(config),
+        REPORT_TYPE_COMMAND_LINE: CommandLineReporter(config),
     }
 
     reports = {}
@@ -72,6 +76,20 @@ class YamlReporter(Reporter):
         report_model = super().createReport(objectForReport)
         #yaml.add_representer(dict, lambda self, data: yaml.representer.SafeRepresenter.represent_dict(self, data.items()))
         return yaml.dump(dict(report_model))
+
+class CommandLineReporter(Reporter):
+    def __init__(self,config):
+        super().__init__(config, REPORT_TYPE_MARKDOWN)
+
+    def createReport(self, objectForReport):
+        report_model = super().createReport(objectForReport)
+        reporter = reportmarkdown.RegionReporter(self.config["report"]["details_level"], objectForReport)
+        report = reporter.report("")
+
+        print(report)
+
+
+        return report
 
 class MarkdownReporter(Reporter):
     def __init__(self,config):
