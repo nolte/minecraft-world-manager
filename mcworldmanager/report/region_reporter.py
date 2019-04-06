@@ -94,10 +94,10 @@ class WorldReporter(Report):
 
     def toYaml(self):
         baseYaml = super().toYaml()
-        corruptedFiles =  {}
+        corruptedFiles = {}
         corruptedFilesList = self.world.files.getFilesWithOneOfError(models.SPECIAL_EYES_ERRORS)
         for file in corruptedFilesList:
-            corruptedFiles[file.filename] = {"type": file.type,"path": file.path, "problems": file.getScan_Results() }
+            corruptedFiles[file.filename] = {"type": file.type, "path": file.path, "problems": file.getScan_Results()}
         if corruptedFiles:
             baseYaml["corrupted"] = corruptedFiles
         return baseYaml

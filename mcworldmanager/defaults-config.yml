@@ -1,10 +1,6 @@
 report:
   details_level: MINIMAL
-  outputs:
-    - CONSOLE
-  format: YAML
-#    - YAML
-#    - COMMANDLINE
+  format: COMMANDLINE # YAML
 multiprocess:
   pool_size: 2
 
