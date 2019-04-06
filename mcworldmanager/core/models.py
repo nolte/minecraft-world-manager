@@ -93,6 +93,9 @@ class MCWorlds(dict):
 
         return allTasks
 
+    def hasCorruptedWorld(self):
+        return True   
+
 
 class MCWorld(object):
     def __init__(self, world_folder):
@@ -134,6 +137,11 @@ class MCWorld(object):
                         faildFiles.append(self[fileType][fileName])
             return faildFiles
 
+    def hasFilesWithOneOfError(self, expectedErrors):
+        if self.files.getFilesWithOneOfError(expectedErrors):
+            return True
+        else:
+            return False
 
 class MCScannedElement(object):
     def __init__(self):
