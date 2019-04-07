@@ -2,4 +2,4 @@ docker run -it \
   --user=${UID}:$(id -g $(whoami)) \
   -w /tmp/worlds \
   -v /tmp/worlds:/tmp/worlds \
-  nolte/minecraft-world-manager:0.1.0.dev -v worlds /tmp/worlds
+  nolte/minecraft-world-manager:0.1.0 -v worlds /tmp/worlds
