@@ -112,16 +112,18 @@ class WorldReporter(Report):
         worldRegionRow[models.CHUNK_OK] = 0
         worldRegionRow["all"] = 0
         worldRegionRow[models.CHUNK_NOT_CREATED] = 0
-        for regionName in self.world.files[models.MC_FILE_TYPE_REGION]:
-            region = self.world.files[models.MC_FILE_TYPE_REGION][regionName]
-            worldRegionRow[models.CHUNK_CORRUPTED] += len(region.chunksByFail(models.CHUNK_CORRUPTED))
-            worldRegionRow[models.CHUNK_WRONG_LOCATED] += len(region.chunksByFail(models.CHUNK_WRONG_LOCATED))
-            worldRegionRow[models.CHUNK_TOO_MANY_ENTITIES] += len(region.chunksByFail(models.CHUNK_TOO_MANY_ENTITIES))
-            worldRegionRow[models.CHUNK_SHARED_OFFSET] += len(region.chunksByFail(models.CHUNK_SHARED_OFFSET))
-            worldRegionRow[models.CHUNK_MISSING_TAG] += len(region.chunksByFail(models.CHUNK_MISSING_TAG))
-            worldRegionRow[models.CHUNK_OK] += len(region.chunksByFail(models.CHUNK_OK))
-            worldRegionRow["all"] += len(region.chunks)
-            worldRegionRow[models.CHUNK_NOT_CREATED] += len(region.chunksByFail(models.CHUNK_NOT_CREATED))
+
+        for regionDimension in self.world.files[models.MC_FILE_TYPE_REGION]:
+            holder = self.world.files[models.MC_FILE_TYPE_REGION][regionDimension]
+            for region in holder.values():
+                worldRegionRow[models.CHUNK_CORRUPTED] += len(region.chunksByFail(models.CHUNK_CORRUPTED))
+                worldRegionRow[models.CHUNK_WRONG_LOCATED] += len(region.chunksByFail(models.CHUNK_WRONG_LOCATED))
+                worldRegionRow[models.CHUNK_TOO_MANY_ENTITIES] += len(region.chunksByFail(models.CHUNK_TOO_MANY_ENTITIES))
+                worldRegionRow[models.CHUNK_SHARED_OFFSET] += len(region.chunksByFail(models.CHUNK_SHARED_OFFSET))
+                worldRegionRow[models.CHUNK_MISSING_TAG] += len(region.chunksByFail(models.CHUNK_MISSING_TAG))
+                worldRegionRow[models.CHUNK_OK] += len(region.chunksByFail(models.CHUNK_OK))
+                worldRegionRow["all"] += len(region.chunks)
+                worldRegionRow[models.CHUNK_NOT_CREATED] += len(region.chunksByFail(models.CHUNK_NOT_CREATED))
 
         return worldRegionRow.values()
 
@@ -169,6 +171,7 @@ class WorldsReporter(Report):
             for failFile in currentWorld.files.getFilesWithOneOfError(models.SPECIAL_EYES_ERRORS):
                 scan_results_list = failFile.scan_results
                 if failFile.type == models.MC_FILE_TYPE_REGION:
+                    scan_results_list = []
                     scan_results_list = failFile.getScan_Results()
 
                 eyes_row = [
@@ -178,7 +181,7 @@ class WorldsReporter(Report):
                 ]
                 special_eyes_data.append(eyes_row)
 
-            files.append(str(len(currentWorld.files[models.MC_FILE_TYPE_REGION])))
+            files.append(str(len(currentWorld.files[models.MC_FILE_TYPE_REGION].all())))
             files.append(str(len(currentWorld.files[models.MC_FILE_TYPE_DATA])))
             if models.MC_FILE_TYPE_PLAYERS_OLD in currentWorld.files:
                 files.append(str(len(currentWorld.files[models.MC_FILE_TYPE_PLAYERS_OLD])))
