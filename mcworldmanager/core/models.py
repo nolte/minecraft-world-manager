@@ -82,12 +82,6 @@ def build_mc_region_file(path, REGION_DIMENSION):
 
 
 class FileSetHolder(dict):
-    def __init__(self, files=[]):
-        assert isinstance(files, list)
-        for file in files:
-            assert isinstance(files, MCScannedFile)
-            self[file.filename] = file
-
     def isOneOfErrorsExists(self, errors):
         for element in self.values():
             if element.isOneOfErrorsExists(errors):
