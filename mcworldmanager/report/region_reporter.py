@@ -68,7 +68,9 @@ class RegionReport(Report):
 
     def toYamlObject(self):
         baseYaml = super().toYaml()
-        baseYaml["reasons"] = list(self.region.getScan_Results())
+        if self.region.getScan_Results():
+            baseYaml["reasons"] = list(self.region.getScan_Results())
+
         baseYaml["path"] = self.region.path
         if self.config["report"]["details_level"] == REPORT_DETAIL_LEVEL_MINIMAL:
             if not baseYaml["successfull"] and self.region.type == models.MC_FILE_TYPE_REGION:
