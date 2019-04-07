@@ -8,25 +8,31 @@ import sys
 
 import anyconfig
 import click
-
+from pyfiglet import Figlet
 
 from mcworldmanager import __version__
 from mcworldmanager.core.analysers import MCRegionFileAnalyser
 from mcworldmanager.core.manager import Manager
 from mcworldmanager.core.models import MCRegionFile, MCWorlds
 from mcworldmanager.log import configure_logger
-from mcworldmanager.report import report_manager,report_utils
+from mcworldmanager.report import report_manager, report_utils
 
 logger = logging.getLogger(__name__)
 
 
 @click.group()
 @click.option("-v", "--verbose", is_flag=True, help="Print debug information", default=False)
-@click.option("-o", "--output_format", type=click.Choice(report_manager.OUTPUT_FORMATS), help="Define the STDout Output format", default=None)
+@click.option(
+    "-o",
+    "--output_format",
+    type=click.Choice(report_manager.OUTPUT_FORMATS),
+    help="Define the STDout Output format",
+    default=None,
+)
 @click.option("-r", "--report_path", type=click.Path(), help="Path for the Report in Yaml Format", default=None)
 @click.option(u"--debug-file", type=click.Path(), default=None, help=u"File to be used as a stream for DEBUG logging")
 @click.pass_context
-def main(ctx, verbose, output_format,report_path, debug_file):
+def main(ctx, verbose, output_format, report_path, debug_file):
     """Console script for mcworldmanager."""
     configure_logger(stream_level="DEBUG" if verbose else "INFO", debug_file=debug_file)
 
@@ -42,14 +48,13 @@ def main(ctx, verbose, output_format,report_path, debug_file):
         ctx.obj["config"]["report"]["path"] = report_path
 
 
-
 @main.command(help="Display the current version.")
 @click.pass_context
 def version(ctx):
     """Display the current version."""
 
-    #f = Figlet(font="slant")
-    print(report_utils.renderApplicationBanner())
+    f = Figlet(font="slant")
+    click.echo(f.renderText("Minecraft World Manager"))
     click.echo(__version__)
 
 
@@ -64,7 +69,7 @@ def region(ctx, region_file_path):
     mcRegion = MCRegionFile(region_file_path)
     analyser.analyse(mcRegion)
     report_manager.createReport(config, mcRegion)
-   
+
     if mcRegion.isManuelCheckRequired():
         sys.exit(1)
     else:
@@ -82,4 +87,3 @@ def worlds(ctx, worlds_directories):
     manager = Manager(worlds, config)
     manager.start()
     report_manager.createReport(config, worlds)
-

@@ -1,7 +1,6 @@
 import os
 
 from terminaltables import AsciiTable
-from pyfiglet import Figlet
 
 from mcworldmanager.core import models
 from mcworldmanager.core.util import colors, special_chars
@@ -85,8 +84,3 @@ def drawTable(headline, data_rows):
         table_data.append(data_row)
     table = AsciiTable(table_data)
     return table.table
-
-
-def renderApplicationBanner():
-    f = Figlet(font="slant")
-    return f.renderText("Minecraft World Manager")

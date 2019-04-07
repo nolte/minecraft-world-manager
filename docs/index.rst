@@ -2,6 +2,9 @@
 .. mdinclude:: ../README.md
 
 
+.. image:: images/region-valid-faild.gif
+
+
 Getting Started
 ---------------
 
