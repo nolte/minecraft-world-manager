@@ -137,7 +137,7 @@ class WorldsReporter(Report):
         super().__init__(config, not worlds.hasCorruptedWorld())
         self.worlds = worlds
 
-    def toYaml(self):
+    def toYamlObject(self):
         baseYaml = super().toYaml()
         worlds = {}
         for world in self.worlds:
@@ -145,7 +145,10 @@ class WorldsReporter(Report):
             worlds[world] = WorldReporter(self.config, currentWorld).toYaml()
 
         baseYaml["worlds"] = worlds
-        return yaml.dump(baseYaml)
+        return baseYaml
+
+    def toYaml(self):
+        return yaml.dump(self.toYamlObject())
 
     def toCommandline(self):
         report = ""
