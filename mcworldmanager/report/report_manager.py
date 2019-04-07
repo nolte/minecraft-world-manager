@@ -1,3 +1,5 @@
+import yaml
+
 from mcworldmanager.core import models
 from mcworldmanager.report import region_reporter
 
@@ -22,3 +24,7 @@ def createReport(config, reportedObject):
             print(reporter.toCommandline())
         elif config["report"]["format"] == REPORT_TYPE_YAML:
             print(reporter.toYaml())
+
+        if "path" in config["report"]:
+            with open(config["report"]["path"], "w") as outfile:
+                yaml.dump(reporter.toYamlObject(), outfile, default_flow_style=False)

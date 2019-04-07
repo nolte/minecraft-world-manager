@@ -38,6 +38,7 @@ class MCDataFileAnalyser(object):
             data_file.scan_results.append(models.DATA_IO_ERROR)
         except Exception as e:
             print(e)
+            print(data_file.filename)
             data_file.scan_results.append(models.DATA_UNEXPECTED)
 
         data_file.scan_time = time.time()

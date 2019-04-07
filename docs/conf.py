@@ -8,8 +8,8 @@ import sys
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 # sys.path.insert(0, os.path.abspath('../project_manager'))
-# sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath(".."))
+# sys.path.insert(0, os.path.abspath("../mcworldmanager"))
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -24,10 +24,10 @@ extensions = [
     "sphinx_click.ext",
     "sphinxcontrib.spelling",
 ]
-
-apidoc_module_dir = "../mcworldmanager"
-apidoc_output_dir = "api"
-apidoc_excluded_paths = ["tests"]
+autodoc_mock_imports = ["pyfiglet"]
+# apidoc_module_dir = "../mcworldmanager"
+# apidoc_output_dir = "api"
+# apidoc_excluded_paths = ["tests"]
 
 spelling_show_suggestions = True
 spelling_ignore_pypi_package_names = True

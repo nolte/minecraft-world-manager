@@ -11,10 +11,9 @@ def build_analyse_file(path, builder):
     return builder(path)
 
 
-def scan_folder_content(path, builder):
+def scan_folder_content(path, builder, files):
     assert isinstance(path, str)
     assert os.path.isdir(path)
-    files = {}
     for mcDirElement in os.listdir(path):
         mcfile = build_analyse_file(os.path.join(path, mcDirElement), builder)
         files[mcfile.filename] = mcfile

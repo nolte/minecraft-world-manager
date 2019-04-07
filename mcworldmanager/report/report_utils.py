@@ -46,7 +46,10 @@ def line_sperator():
 def build_human_readable_errorList(errors):
     failString = ""
     for error in errors:
-        failString += "{:}, ".format(ERROR_TEXT_MAPPING[error])
+        if error in ERROR_TEXT_MAPPING:
+            failString += "{:}, ".format(ERROR_TEXT_MAPPING[error])
+        else:
+            failString += "{:}, ".format(error)
 
     return failString
 

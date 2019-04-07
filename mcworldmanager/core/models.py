@@ -38,6 +38,18 @@ SPECIAL_EYES_ERRORS = [
     CHUNK_CORRUPTED,
 ]
 
+REGION_DIMENSION_NAME_OVERWORLD = "overworld"
+REGION_DIMENSION_NAME_THE_END = "the_end"
+REGION_DIMENSION_NAME_NETHER = "nether"
+
+# Dimension names:
+DIMENSION_NAMES = {
+    "region": REGION_DIMENSION_NAME_OVERWORLD,
+    "DIM1": REGION_DIMENSION_NAME_THE_END,
+    "DIM-1": REGION_DIMENSION_NAME_NETHER,
+}
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -53,8 +65,42 @@ def build_mc_data_file(path):
     return MCDataFile(path)
 
 
-def build_mc_region_file(path):
-    return MCRegionFile(path)
+def build_mc_region_file_overworld(path):
+    return MCRegionFile(path, REGION_DIMENSION_NAME_OVERWORLD)
+
+
+def build_mc_region_file_nether(path):
+    return MCRegionFile(path, REGION_DIMENSION_NAME_NETHER)
+
+
+def build_mc_region_file_the_end(path):
+    return MCRegionFile(path, REGION_DIMENSION_NAME_THE_END)
+
+
+def build_mc_region_file(path, REGION_DIMENSION):
+    return MCRegionFile(path, REGION_DIMENSION)
+
+
+class FileSetHolder(dict):
+    def isOneOfErrorsExists(self, errors):
+        for element in self.values():
+            if element.isOneOfErrorsExists(errors):
+                return True
+        return False
+        # for region_dimension in self.keys():
+
+    def getFilesWithOneOfError(self, errors):
+        faildFiles = []
+        for currentFile in self.keys():
+            if self[currentFile].isOneOfErrorsExists(errors):
+                faildFiles.append(self[currentFile])
+        return faildFiles
+
+    def getScan_Results(self):
+        results = []
+        for currentFile in self.keys():
+            results.extend(self[currentFile].getScan_Results())
+        return list(dict.fromkeys(results))
 
 
 class MCValidatesResultObject(list):
@@ -104,36 +150,86 @@ class MCWorld(object):
         self.name = pathlib.PurePath(world_folder).name
         self.files = self.MCFilesSet(self)
 
-    class MCFilesSet(dict):
+    class WorldRegionDimensionHolder(FileSetHolder):
+        def __init__(self, world_folder):
+            overworld_path = os.path.join(world_folder, "region")
+            if os.path.isdir(overworld_path):
+                self[REGION_DIMENSION_NAME_OVERWORLD] = FileSetHolder()
+                self[REGION_DIMENSION_NAME_OVERWORLD] = util.scan_folder_content(
+                    overworld_path, build_mc_region_file_overworld, self[REGION_DIMENSION_NAME_OVERWORLD]
+                )
+            nether_path = os.path.join(world_folder, "DIM-1/region")
+            if os.path.isdir(nether_path):
+                self[REGION_DIMENSION_NAME_NETHER] = FileSetHolder()
+                self[REGION_DIMENSION_NAME_NETHER] = util.scan_folder_content(
+                    nether_path, build_mc_region_file_nether, self[REGION_DIMENSION_NAME_NETHER]
+                )
+            the_end_path = os.path.join(world_folder, "DIM1/region")
+            if os.path.isdir(the_end_path):
+                self[REGION_DIMENSION_NAME_THE_END] = FileSetHolder()
+                self[REGION_DIMENSION_NAME_THE_END] = util.scan_folder_content(
+                    the_end_path, build_mc_region_file_the_end, self[REGION_DIMENSION_NAME_THE_END]
+                )
+
+        def all(self):
+            allFiles = []
+            for fileType in self.values():
+                allFiles.extend(fileType.values())
+            return allFiles
+
+        def getFilesWithOneOfError(self, errors):
+            faildFiles = []
+            for currentFile in self.keys():
+                if self[currentFile].isOneOfErrorsExists(errors):
+                    faildFiles.extend(self[currentFile].getFilesWithOneOfError(errors))
+            return faildFiles
+
+        def getScan_Results(self):
+            results = []
+            for currentFile in self.keys():
+                results.extend(self[currentFile].getScan_Results())
+            return list(dict.fromkeys(results))
+
+    class MCFilesSet(FileSetHolder):
         """ Holder Class for the Analysed MC Files """
 
         def __init__(self, world):
-            self[MC_FILE_TYPE_DATA] = util.scan_folder_content(
-                os.path.join(world.world_folder, "data"), build_mc_data_file
+            self[MC_FILE_TYPE_DATA] = FileSetHolder()
+            util.scan_folder_content(
+                os.path.join(world.world_folder, "data"), build_mc_data_file, self[MC_FILE_TYPE_DATA]
             )
-            self[MC_FILE_TYPE_REGION] = util.scan_folder_content(
-                os.path.join(world.world_folder, "region"), build_mc_region_file
-            )
+            # Load the Regions
+            self[MC_FILE_TYPE_REGION] = MCWorld.WorldRegionDimensionHolder(world.world_folder)
             oldPlayerPath = os.path.join(world.world_folder, "players")
             if os.path.isdir(oldPlayerPath):
-                self[MC_FILE_TYPE_PLAYERS_OLD] = util.scan_folder_content(oldPlayerPath, build_old_player_file)
+                self[MC_FILE_TYPE_PLAYERS_OLD] = FileSetHolder()
+                self[MC_FILE_TYPE_PLAYERS_OLD] = util.scan_folder_content(
+                    oldPlayerPath, build_old_player_file, self[MC_FILE_TYPE_PLAYERS_OLD]
+                )
 
             playerPath = os.path.join(world.world_folder, "playerdata")
             if os.path.isdir(playerPath):
-                self[MC_FILE_TYPE_PLAYERS] = util.scan_folder_content(playerPath, build_player_file)
+                self[MC_FILE_TYPE_PLAYERS] = FileSetHolder()
+                self[MC_FILE_TYPE_PLAYERS] = util.scan_folder_content(
+                    playerPath, build_player_file, self[MC_FILE_TYPE_PLAYERS]
+                )
 
         def all(self):
             allMCFiles = []
-            for files in self.values():
-                allMCFiles.extend(files.values())
+            for files in self.keys():
+                if files == MC_FILE_TYPE_REGION:
+                    for regiontype in self[MC_FILE_TYPE_REGION]:
+                        files = self[MC_FILE_TYPE_REGION][regiontype].values()
+                        allMCFiles.extend(files)
+                else:
+                    allMCFiles.extend(self[files].values())
             return allMCFiles
 
         def getFilesWithOneOfError(self, errors):
             faildFiles = []
             for fileType in self.keys():
-                for fileName in self[fileType]:
-                    if self[fileType][fileName].isOneOfErrorsExists(errors):
-                        faildFiles.append(self[fileType][fileName])
+                holder = self[fileType]
+                faildFiles.extend(holder.getFilesWithOneOfError(errors))
             return faildFiles
 
     def hasFilesWithOneOfError(self, expectedErrors):
@@ -170,8 +266,9 @@ class MCDataFile(MCScannedFile):
 
 
 class MCRegionFile(MCScannedFile):
-    def __init__(self, path):
+    def __init__(self, path, dimension_tag=None):
         super().__init__(path, MC_FILE_TYPE_REGION)
+        self.dimension_tag = dimension_tag
         coordX, coordZ = util.get_coords(self.filename)
         self.x = coordX
         self.z = coordZ
