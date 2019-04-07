@@ -66,9 +66,10 @@ class RegionReport(Report):
 
         return report
 
-    def toYaml(self):
+    def toYamlObject(self):
         baseYaml = super().toYaml()
         baseYaml["filename"] = self.region.filename
+        baseYaml["path"] = self.region.path
         if self.config["report"]["details_level"] == REPORT_DETAIL_LEVEL_MINIMAL:
             if not baseYaml["successfull"]:
                 chunks = self.region.chunksByFail(models.SPECIAL_EYES_ERRORS)
@@ -83,8 +84,11 @@ class RegionReport(Report):
                         "reasons": list(chunk.scan_results),
                     }
                     baseYaml["chunks"].append(chunkObj)
+        return baseYaml
 
-        return yaml.dump(baseYaml)
+
+    def toYaml(self):
+        return yaml.dump(self.toYamlObject())
 
 
 class WorldReporter(Report):
@@ -94,10 +98,11 @@ class WorldReporter(Report):
 
     def toYaml(self):
         baseYaml = super().toYaml()
-        corruptedFiles = {}
+        corruptedFiles = []
         corruptedFilesList = self.world.files.getFilesWithOneOfError(models.SPECIAL_EYES_ERRORS)
         for file in corruptedFilesList:
-            corruptedFiles[file.filename] = {"type": file.type, "path": file.path, "problems": file.getScan_Results()}
+            corruptedFiles.append(RegionReport(self.config,file).toYamlObject())
+            #corruptedFiles.append({"type": file.type, "path": file.path, "problems": file.getScan_Results()})
         if corruptedFiles:
             baseYaml["corrupted"] = corruptedFiles
         return baseYaml
