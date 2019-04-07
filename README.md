@@ -4,14 +4,27 @@
 
 Insperated by [Fenixin/Minecraft-Region-Fixer](https://github.com/Fenixin/Minecraft-Region-Fixer), but a optimized commandline usage, and integration to your backup Process.
 
-This Tool has different output formats, ```commandline``` and ```Yaml```.
+For more informations take a look to the [Documentation](https://nolte.github.io/minecraft-world-manager/).
 
-The Yaml format can used for fixing the corrupted files.
+## Features
 
-You can analys a set of worlds or a single Minecraft File.
+- Scanning a single Region File
+- Scanning a list of given Worlds
+- Scanning all World Folders from a Minecraft Server Structure
+- Saving the Report as yaml File
+
+## Supported Systems
+
+For executing you need Python 3.5 or later, or you use the Preconfigured Docker Container from [DockerHub](https://hub.docker.com/r/nolte/minecraft-world-manager).
+
+## Example Calls
 
 ```bash
-mcworldmanager -v worlds ~/repos-ansible/minecraft-server-project-repos/docker_compose-world-maps/worldfolder/world
+mcworldmanager server ~/repos-ansible/minecraft-server-project-repos/docker_compose-world-maps/worldfolder/world
+```
+
+```bash
+mcworldmanager worlds ~/repos-ansible/minecraft-server-project-repos/docker_compose-world-maps/worldfolder/world
 ```
 
 ```bash

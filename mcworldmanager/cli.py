@@ -82,6 +82,23 @@ def region(ctx, region_file_path):
 def worlds(ctx, worlds_directories):
     """Scanning a list of Worlds, and create a Report"""
     click.echo("start scanning")
+    worlds = MCWorlds(list(worlds_directories))
+    config = ctx.obj["config"]
+    manager = Manager(worlds, config)
+    manager.start()
+    report_manager.createReport(config, worlds)
+
+
+@main.command(help="Analyse a all Worlds in a Server Directories")
+@click.argument("server_directory", type=click.Path(), required=True)
+@click.pass_context
+def server(ctx, server_directory):
+    click.echo("start scanning")
+    worlds_directories = []
+    for server_dir in next(os.walk(server_directory))[1]:
+        if server_dir.startswith("world"):
+            worlds_directories.append(os.path.join(server_directory, server_dir))
+
     worlds = MCWorlds(worlds_directories)
     config = ctx.obj["config"]
     manager = Manager(worlds, config)
