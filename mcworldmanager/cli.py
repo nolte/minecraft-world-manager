@@ -15,7 +15,7 @@ from mcworldmanager.core.analysers import MCRegionFileAnalyser
 from mcworldmanager.core.manager import Manager
 from mcworldmanager.core.models import MCRegionFile, MCWorlds
 from mcworldmanager.log import configure_logger
-from mcworldmanager.report import report_manager, report_utils
+from mcworldmanager.report import report_manager
 
 logger = logging.getLogger(__name__)
 
