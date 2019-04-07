@@ -100,7 +100,6 @@ class WorldReporter(Report):
         corruptedFilesList = self.world.files.getFilesWithOneOfError(models.SPECIAL_EYES_ERRORS)
         for file in corruptedFilesList:
             corruptedFiles.append(RegionReport(self.config, file).toYamlObject())
-            # corruptedFiles.append({"type": file.type, "path": file.path, "problems": file.getScan_Results()})
         if corruptedFiles:
             baseYaml["corrupted"] = corruptedFiles
         return baseYaml
