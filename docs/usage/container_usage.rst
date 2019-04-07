@@ -6,7 +6,7 @@ For easy and quickly usage you can use the Dockerfile from `Dockerhub <https://h
 
 .. code:: bash
 
-    docker pull nolte/minecraft-world-manager:0.2.0.dev
+    docker pull nolte/minecraft-world-manager:v0.2.0.dev
 
 For wrapping the tool, and checkout to your local FS it is required that you define some additional :ref:`usage-container-run-parameters`.
 
