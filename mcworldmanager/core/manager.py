@@ -73,7 +73,9 @@ class Manager(object):
                 try:
                     if item.file.type == models.MC_FILE_TYPE_REGION:
                         analyed = self.regionFileAnalyser.analyse(item.file)
-                        self.manager.worlds[item.world].files[models.MC_FILE_TYPE_REGION][item.file.dimension_tag][item.file.filename] = analyed
+                        self.manager.worlds[item.world].files[models.MC_FILE_TYPE_REGION][item.file.dimension_tag][
+                            item.file.filename
+                        ] = analyed
                     if item.file.type == models.MC_FILE_TYPE_DATA:
                         analyed = self.dataFileAnalyser.analyse(item.file)
                         self.manager.worlds[item.world].files[models.MC_FILE_TYPE_DATA][item.file.filename] = analyed

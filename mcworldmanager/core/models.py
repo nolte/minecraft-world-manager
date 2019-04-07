@@ -43,9 +43,11 @@ REGION_DIMENSION_NAME_THE_END = "the_end"
 REGION_DIMENSION_NAME_NETHER = "nether"
 
 # Dimension names:
-DIMENSION_NAMES = {"region": REGION_DIMENSION_NAME_OVERWORLD,
-                   "DIM1": REGION_DIMENSION_NAME_THE_END,
-                   "DIM-1": REGION_DIMENSION_NAME_NETHER}
+DIMENSION_NAMES = {
+    "region": REGION_DIMENSION_NAME_OVERWORLD,
+    "DIM1": REGION_DIMENSION_NAME_THE_END,
+    "DIM-1": REGION_DIMENSION_NAME_NETHER,
+}
 
 
 logger = logging.getLogger(__name__)
@@ -64,14 +66,20 @@ def build_mc_data_file(path):
 
 
 def build_mc_region_file_overworld(path):
-    return MCRegionFile(path,REGION_DIMENSION_NAME_OVERWORLD)
+    return MCRegionFile(path, REGION_DIMENSION_NAME_OVERWORLD)
+
 
 def build_mc_region_file_nether(path):
-    return MCRegionFile(path,REGION_DIMENSION_NAME_NETHER)
+    return MCRegionFile(path, REGION_DIMENSION_NAME_NETHER)
+
+
 def build_mc_region_file_the_end(path):
-    return MCRegionFile(path,REGION_DIMENSION_NAME_THE_END)    
-def build_mc_region_file(path,REGION_DIMENSION):
-    return MCRegionFile(path,REGION_DIMENSION)
+    return MCRegionFile(path, REGION_DIMENSION_NAME_THE_END)
+
+
+def build_mc_region_file(path, REGION_DIMENSION):
+    return MCRegionFile(path, REGION_DIMENSION)
+
 
 class FileSetHolder(dict):
     def __init__(self, files=[]):
@@ -80,12 +88,13 @@ class FileSetHolder(dict):
             assert isinstance(files, MCScannedFile)
             self[file.filename] = file
 
-    def isOneOfErrorsExists(self,errors):
+    def isOneOfErrorsExists(self, errors):
         for element in self.values():
             if element.isOneOfErrorsExists(errors):
                 return True
-        return False        
-        #for region_dimension in self.keys():
+        return False
+        # for region_dimension in self.keys():
+
     def getFilesWithOneOfError(self, errors):
         faildFiles = []
         for currentFile in self.keys():
@@ -98,7 +107,6 @@ class FileSetHolder(dict):
         for currentFile in self.keys():
             results.extend(self[currentFile].getScan_Results())
         return list(dict.fromkeys(results))
-
 
 
 class MCValidatesResultObject(list):
@@ -153,21 +161,22 @@ class MCWorld(object):
             overworld_path = os.path.join(world_folder, "region")
             if os.path.isdir(overworld_path):
                 self[REGION_DIMENSION_NAME_OVERWORLD] = FileSetHolder()
-                self[REGION_DIMENSION_NAME_OVERWORLD] = (util.scan_folder_content(
+                self[REGION_DIMENSION_NAME_OVERWORLD] = util.scan_folder_content(
                     overworld_path, build_mc_region_file_overworld, self[REGION_DIMENSION_NAME_OVERWORLD]
-                ))
+                )
             nether_path = os.path.join(world_folder, "DIM-1/region")
             if os.path.isdir(nether_path):
                 self[REGION_DIMENSION_NAME_NETHER] = FileSetHolder()
-                self[REGION_DIMENSION_NAME_NETHER] = (util.scan_folder_content(
-                    nether_path, build_mc_region_file_nether , self[REGION_DIMENSION_NAME_NETHER]
-                )) 
+                self[REGION_DIMENSION_NAME_NETHER] = util.scan_folder_content(
+                    nether_path, build_mc_region_file_nether, self[REGION_DIMENSION_NAME_NETHER]
+                )
             the_end_path = os.path.join(world_folder, "DIM1/region")
             if os.path.isdir(the_end_path):
                 self[REGION_DIMENSION_NAME_THE_END] = FileSetHolder()
-                self[REGION_DIMENSION_NAME_THE_END] = (util.scan_folder_content(
-                    the_end_path, build_mc_region_file_the_end , self[REGION_DIMENSION_NAME_THE_END]
-                ))  
+                self[REGION_DIMENSION_NAME_THE_END] = util.scan_folder_content(
+                    the_end_path, build_mc_region_file_the_end, self[REGION_DIMENSION_NAME_THE_END]
+                )
+
         def all(self):
             allFiles = []
             for fileType in self.values():
@@ -185,7 +194,7 @@ class MCWorld(object):
             results = []
             for currentFile in self.keys():
                 results.extend(self[currentFile].getScan_Results())
-            return list(dict.fromkeys(results))            
+            return list(dict.fromkeys(results))
 
     class MCFilesSet(FileSetHolder):
         """ Holder Class for the Analysed MC Files """
@@ -196,16 +205,20 @@ class MCWorld(object):
                 os.path.join(world.world_folder, "data"), build_mc_data_file, self[MC_FILE_TYPE_DATA]
             )
             # Load the Regions
-            self[MC_FILE_TYPE_REGION] =  MCWorld.WorldRegionDimensionHolder(world.world_folder)
+            self[MC_FILE_TYPE_REGION] = MCWorld.WorldRegionDimensionHolder(world.world_folder)
             oldPlayerPath = os.path.join(world.world_folder, "players")
             if os.path.isdir(oldPlayerPath):
                 self[MC_FILE_TYPE_PLAYERS_OLD] = FileSetHolder()
-                self[MC_FILE_TYPE_PLAYERS_OLD] = util.scan_folder_content(oldPlayerPath, build_old_player_file, self[MC_FILE_TYPE_PLAYERS_OLD] )
+                self[MC_FILE_TYPE_PLAYERS_OLD] = util.scan_folder_content(
+                    oldPlayerPath, build_old_player_file, self[MC_FILE_TYPE_PLAYERS_OLD]
+                )
 
             playerPath = os.path.join(world.world_folder, "playerdata")
             if os.path.isdir(playerPath):
                 self[MC_FILE_TYPE_PLAYERS] = FileSetHolder()
-                self[MC_FILE_TYPE_PLAYERS] = util.scan_folder_content(playerPath, build_player_file, self[MC_FILE_TYPE_PLAYERS])
+                self[MC_FILE_TYPE_PLAYERS] = util.scan_folder_content(
+                    playerPath, build_player_file, self[MC_FILE_TYPE_PLAYERS]
+                )
 
         def all(self):
             allMCFiles = []
@@ -261,7 +274,7 @@ class MCDataFile(MCScannedFile):
 class MCRegionFile(MCScannedFile):
     def __init__(self, path, dimension_tag=None):
         super().__init__(path, MC_FILE_TYPE_REGION)
-        self.dimension_tag = dimension_tag 
+        self.dimension_tag = dimension_tag
         coordX, coordZ = util.get_coords(self.filename)
         self.x = coordX
         self.z = coordZ

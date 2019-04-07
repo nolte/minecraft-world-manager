@@ -49,7 +49,7 @@ def build_human_readable_errorList(errors):
         if error in ERROR_TEXT_MAPPING:
             failString += "{:}, ".format(ERROR_TEXT_MAPPING[error])
         else:
-            failString += "{:}, ".format(error) 
+            failString += "{:}, ".format(error)
 
     return failString
 

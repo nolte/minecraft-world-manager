@@ -118,7 +118,9 @@ class WorldReporter(Report):
             for region in holder.values():
                 worldRegionRow[models.CHUNK_CORRUPTED] += len(region.chunksByFail(models.CHUNK_CORRUPTED))
                 worldRegionRow[models.CHUNK_WRONG_LOCATED] += len(region.chunksByFail(models.CHUNK_WRONG_LOCATED))
-                worldRegionRow[models.CHUNK_TOO_MANY_ENTITIES] += len(region.chunksByFail(models.CHUNK_TOO_MANY_ENTITIES))
+                worldRegionRow[models.CHUNK_TOO_MANY_ENTITIES] += len(
+                    region.chunksByFail(models.CHUNK_TOO_MANY_ENTITIES)
+                )
                 worldRegionRow[models.CHUNK_SHARED_OFFSET] += len(region.chunksByFail(models.CHUNK_SHARED_OFFSET))
                 worldRegionRow[models.CHUNK_MISSING_TAG] += len(region.chunksByFail(models.CHUNK_MISSING_TAG))
                 worldRegionRow[models.CHUNK_OK] += len(region.chunksByFail(models.CHUNK_OK))

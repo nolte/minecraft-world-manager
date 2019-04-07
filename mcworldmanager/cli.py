@@ -8,7 +8,6 @@ import sys
 
 import anyconfig
 import click
-
 from pyfiglet import Figlet
 
 from mcworldmanager import __version__
@@ -45,8 +44,8 @@ def main(ctx, verbose, output_format, debug_file):
 def version(ctx):
     """Display the current version."""
 
-    f = Figlet(font='slant')
-    click.echo(f.renderText('Minecraft World Manager'))
+    f = Figlet(font="slant")
+    click.echo(f.renderText("Minecraft World Manager"))
     click.echo(__version__)
 
 
