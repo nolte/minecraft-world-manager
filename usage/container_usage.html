@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Container Usage &mdash; Minecraft Region Checker  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Minecraft Region Checker
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Container Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#container-run-parameters">Container Run Parameters</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Minecraft Region Checker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Container Usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/usage/container_usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="container-usage">
+<h1>Container Usage<a class="headerlink" href="#container-usage" title="Permalink to this headline">¶</a></h1>
+<p>For easy and quickly usage you can use the Dockerfile from <a class="reference external" href="https://hub.docker.com/r/nolte/minecraft-world-manager">Dockerhub</a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker pull nolte/minecraft-world-manager:0.1.0
+</pre></div>
+</div>
+<p>For wrapping the tool, and checkout to your local FS it is required that you define some additional <a class="reference internal" href="#usage-container-run-parameters"><span class="std std-ref">Container Run Parameters</span></a>.</p>
+<div class="literal-block-wrapper docutils container" id="minecraft-world-manager-command">
+<div class="code-block-caption"><span class="caption-text">execute world check</span><a class="headerlink" href="#minecraft-world-manager-command" title="Permalink to this code">¶</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -it <span class="se">\</span>
+  --user<span class="o">=</span><span class="si">${</span><span class="nv">UID</span><span class="si">}</span>:<span class="k">$(</span>id -g <span class="k">$(</span>whoami<span class="k">))</span> <span class="se">\</span>
+  -w /tmp/worlds <span class="se">\</span>
+  -v /tmp/worlds:/tmp/worlds <span class="se">\</span>
+  nolte/minecraft-world-manager:0.1.0 -v worlds /tmp/worlds
+</pre></div>
+</div>
+</div>
+<div class="section" id="container-run-parameters">
+<span id="usage-container-run-parameters"></span><h2>Container Run Parameters<a class="headerlink" href="#container-run-parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--user</span> <span class="pre">${UID}:$(id</span> <span class="pre">-g</span> <span class="pre">$(whoami))</span></code></dt><dd><p>The Container User will mapped to your user and group from the Host System, see <a class="reference external" href="https://docs.docker.com/engine/reference/run/#user">User</a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-w</span> <span class="pre">/tmp/worlds</span></code></dt><dd><p>The Container <a class="reference external" href="https://docs.docker.com/engine/reference/run/#workdir">Workingdir</a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">/tmp/worlds:/tmp/worlds</span></code></dt><dd><p>Some Folder mounted to your Host System, used as scanning base folder.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">[mcworldmanager</span> <span class="pre">command]</span></code></dt><dd><p>Using the <a class="reference internal" href="usage.html#cli-parameters"><span class="std std-ref">mcworldmanager</span></a> commandline parameters.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

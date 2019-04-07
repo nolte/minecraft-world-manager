@@ -1,35 +1,150 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>Minecraft World Checker &#8212; Minecraft Region Checker  documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Minecraft World Checker &mdash; Minecraft Region Checker  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Usage" href="usage/usage.html" />
+    <link rel="next" title="Usage" href="usage/usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="#" class="icon icon-home"> Minecraft Region Checker
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="usage/usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/container_usage.html">Container Usage</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Minecraft Region Checker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Minecraft World Checker</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="minecraft-world-checker">
 <h1>Minecraft World Checker<a class="headerlink" href="#minecraft-world-checker" title="Permalink to this headline">¶</a></h1>
@@ -44,16 +159,34 @@
 <a class="reference external image-reference" href="https://microbadger.com/images/nolte/minecraft-world-manager"><img alt="version" src="https://images.microbadger.com/badges/version/nolte/minecraft-world-manager.svg" /></a>
 <a class="reference external image-reference" href="https://hub.docker.com/r/nolte/minecraft-world-manager"><img alt="docker stars" src="https://img.shields.io/docker/stars/nolte/minecraft-world-manager.svg?style=flat" /></a>
 <a class="reference external image-reference" href="https://hub.docker.com/r/nolte/minecraft-world-manager"><img alt="docker pulls" src="https://img.shields.io/docker/pulls/nolte/minecraft-world-manager.svg?style=flat" /></a>
-<a class="reference external image-reference" href="https://pypi.org/project/minecraft-world-manager"><img alt="pypi.org version" src="https://img.shields.io/pypi/v/minecraft-world-manager.svg?style=flat" /></a>
+<a class="reference external image-reference" href="https://pypi.org/project/mcworldmanager"><img alt="pypi.org version" src="https://img.shields.io/pypi/v/mcworldmanager.svg?style=flat" /></a>
 <p>Insperated by <a class="reference external" href="https://github.com/Fenixin/Minecraft-Region-Fixer">Fenixin/Minecraft-Region-Fixer</a>, but a optimized commandline usage, and integration to your backup Process.</p>
-<p>This Tool has different output formats, <code class="docutils literal notranslate"><span class="pre">commandline</span></code> and <code class="docutils literal notranslate"><span class="pre">Yaml</span></code>.</p>
-<p>The Yaml format can used for fixing the corrupted files.</p>
-<p>You can analys a set of worlds or a single Minecraft File.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mcworldmanager -v worlds ~/repos-ansible/minecraft-server-project-repos/docker_compose-world-maps/worldfolder/world
+<p>For more informations take a look to the <a class="reference external" href="https://nolte.github.io/minecraft-world-manager/">Documentation</a>.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Scanning a single Region File</p></li>
+<li><p>Scanning a list of given Worlds</p></li>
+<li><p>Scanning all World Folders from a Minecraft Server Structure</p></li>
+<li><p>Saving the Report as yaml File</p></li>
+</ul>
+</div>
+<div class="section" id="supported-systems">
+<h2>Supported Systems<a class="headerlink" href="#supported-systems" title="Permalink to this headline">¶</a></h2>
+<p>For executing you need Python 3.5 or later, or you use the Preconfigured Docker Container from <a class="reference external" href="https://hub.docker.com/r/nolte/minecraft-world-manager">DockerHub</a>.</p>
+</div>
+<div class="section" id="example-calls">
+<h2>Example Calls<a class="headerlink" href="#example-calls" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mcworldmanager server ~/repos-ansible/minecraft-server-project-repos/docker_compose-world-maps/worldfolder/world
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mcworldmanager worlds ~/repos-ansible/minecraft-server-project-repos/docker_compose-world-maps/worldfolder/world
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mcworldmanager region ~/repos-ansible/minecraft-server-project-repos/docker_compose-world-maps/worldfolder/world_flat/region/r.1.1.mca
 </pre></div>
+</div>
+<img alt="_images/region-valid-faild.gif" src="_images/region-valid-faild.gif" />
 </div>
 <div class="section" id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
@@ -61,6 +194,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage/usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage/usage.html#mcworldmanager">mcworldmanager</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage/container_usage.html">Container Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/container_usage.html#container-run-parameters">Container Run Parameters</a></li>
 </ul>
 </li>
 </ul>
@@ -77,70 +214,50 @@
 </div>
 
 
+           </div>
+           
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">Minecraft Region Checker</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="usage/usage.html">Usage</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="usage/usage.html" title="next chapter">Usage</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-    </form>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="usage/usage.html" class="btn btn-neutral float-right" title="Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
     </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 
 
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-
-
-
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
     
-  </body>
+   
+
+</body>
 </html>
