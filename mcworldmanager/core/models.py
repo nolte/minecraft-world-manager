@@ -126,7 +126,7 @@ class MCWorlds(dict):
     """ Model Class for all Analyed worlds"""
 
     def __init__(self, worlds_directories):
-        assert isinstance(worlds_directories, tuple)
+        assert isinstance(worlds_directories, list)
         for world_directory in worlds_directories:
             currentWorld = MCWorld(world_directory)
             self[currentWorld.name] = currentWorld
@@ -248,6 +248,9 @@ class MCScannedElement(object):
 
     def hasErrors(self):
         return self.scan_results.hasError()
+
+    def isManuelCheckRequired(self):
+        return self.isOneOfErrorsExists(SPECIAL_EYES_ERRORS)
 
 
 class MCScannedFile(MCScannedElement):
