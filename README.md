@@ -21,7 +21,7 @@ For more informations take a look to the [Documentation](https://nolte.github.io
 For executing you need Python 3.5 or later, or you use the Preconfigured Docker Container from [DockerHub](https://hub.docker.com/r/nolte/minecraft-world-manager).
 Tested with a Minecraft *1.13.2* World.
 
-### Using as Python CL Tool
+### Using as Python CLI
 
 This Tool are published at [pypi.org](https://pypi.org/project/mcworldmanager/), and be install with [pip](https://packaging.python.org/tutorials/installing-packages/#installing-from-pypi). It is recommendet to use a [virtualenv](https://virtualenv.pypa.io/en/latest/) to avoid any Dependency correlations.
 
