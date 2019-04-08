@@ -27,7 +27,7 @@ requirements = [
     "terminaltables==3.1.0",
     "console-menu==0.5.1",
     "anyconfig==0.9.8",
-    "pyfiglet==0.7",
+    "pyfiglet==0.8.post1",
 ]
 
 setup_requirements = []
