@@ -26,7 +26,7 @@ requirements = [
     "pyyaml>=4.2b1",
     "terminaltables==3.1.0",
     "console-menu==0.5.1",
-    "anyconfig==0.9.5",
+    "anyconfig==0.9.8",
     "pyfiglet==0.7",
 ]
 
