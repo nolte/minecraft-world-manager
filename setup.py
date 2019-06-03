@@ -22,7 +22,7 @@ with io.open(path.join(here, "README.md"), encoding="utf-8") as f:
 requirements = [
     "Click==7.0",
     "NBT==1.5.0",
-    "progressbar2==3.39.3",
+    "progressbar2==3.42.0",
     "pyyaml>=4.2b1",
     "terminaltables==3.1.0",
     "console-menu==0.5.1",
