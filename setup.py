@@ -25,7 +25,7 @@ requirements = [
     "progressbar2==3.42.0",
     "pyyaml>=4.2b1",
     "terminaltables==3.1.0",
-    "console-menu==0.5.1",
+    "console-menu==0.6.0",
     "anyconfig==0.9.9",
     "pyfiglet==0.8.post1",
 ]
