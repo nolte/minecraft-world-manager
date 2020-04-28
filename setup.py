@@ -20,7 +20,7 @@ with io.open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 
 requirements = [
-    "Click==7.0",
+    "Click==7.1.2",
     "NBT==1.5.0",
     "progressbar2==3.42.0",
     "pyyaml>=4.2b1",
