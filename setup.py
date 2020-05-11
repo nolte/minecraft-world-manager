@@ -32,7 +32,7 @@ requirements = [
 
 setup_requirements = []
 
-test_requirements = ["pytest==5.0.1"]
+test_requirements = ["pytest==5.4.2"]
 
 setup(
     author="nolte",
